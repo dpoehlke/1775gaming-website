@@ -6,26 +6,45 @@ export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState<{ text: string; type: "error" | "info" } | null>(null);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
+    setMessage(null);
 
     if (!email.trim()) {
-      setError("Please enter your email address.");
+      setMessage({ text: "Please enter your email address.", type: "error" });
       return;
     }
 
     setLoading(true);
 
-    // ── Placeholder submit ──────────────────────────────────────────────────
-    // Phase 4 will replace this with a real Supabase insert.
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    // ───────────────────────────────────────────────────────────────────────
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), source: "homepage" }),
+      });
 
-    setLoading(false);
-    setSubmitted(true);
+      const data = await res.json();
+
+      if (data.duplicate) {
+        setSubmitted(true);
+        setMessage({ text: "You are already on the list, Pioneer.", type: "info" });
+        return;
+      }
+
+      if (!res.ok) {
+        setMessage({ text: "Something went wrong. Try again.", type: "error" });
+        return;
+      }
+
+      setSubmitted(true);
+    } catch {
+      setMessage({ text: "Something went wrong. Try again.", type: "error" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,13 +84,18 @@ export default function NewsletterSection() {
           /* ── Success state ── */
           <div className="bg-black/30 border border-white/20 p-10 backdrop-blur-sm">
             <div className="font-heading text-5xl text-gold mb-4">✓</div>
-            <p className="font-heading text-3xl text-white tracking-wide mb-3">
-              YOU&rsquo;RE ENLISTED
+            <p className="font-heading text-3xl text-gold tracking-wide mb-3">
+              YOU ARE ENLISTED, SOLDIER.
             </p>
-            <p className="font-body text-white/60 text-sm leading-relaxed">
-              Welcome to the 1775 Gaming war room. We&rsquo;ll be in touch with
-              early access details when the mission goes live.
+            <p className="font-body text-white/70 text-sm leading-relaxed">
+              Welcome to the 1775 Gaming inner circle. We&rsquo;ll be in touch
+              with early access details when the mission goes live.
             </p>
+            {message?.type === "info" && (
+              <p className="font-body text-gold/70 text-xs mt-4">
+                {message.text}
+              </p>
+            )}
           </div>
         ) : (
           /* ── Form ── */
@@ -103,8 +127,14 @@ export default function NewsletterSection() {
               </button>
             </form>
 
-            {error && (
-              <p className="font-body text-white/70 text-xs mt-3">{error}</p>
+            {message && (
+              <p
+                className={`font-body text-xs mt-3 ${
+                  message.type === "error" ? "text-scarlet" : "text-white/70"
+                }`}
+              >
+                {message.text}
+              </p>
             )}
 
             <p className="font-body text-white/40 text-xs mt-5">

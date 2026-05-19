@@ -102,14 +102,39 @@ function InlineNewsletter() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
+  const [isError, setIsError] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.trim()) return;
+    setStatusMsg("");
+    setIsError(false);
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), source: "blog" }),
+      });
+      const data = await res.json();
+      if (data.duplicate) {
+        setSubmitted(true);
+        setStatusMsg("You are already on the list, Pioneer.");
+        return;
+      }
+      if (!res.ok) {
+        setIsError(true);
+        setStatusMsg("Something went wrong. Try again.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setIsError(true);
+      setStatusMsg("Something went wrong. Try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -137,32 +162,44 @@ function InlineNewsletter() {
 
           <div className="w-full sm:w-auto flex-shrink-0">
             {submitted ? (
-              <div className="text-center px-8 py-3 border border-gold/40 bg-gold/10">
-                <span className="font-body text-gold text-sm font-semibold uppercase tracking-widest">
-                  You&apos;re Enlisted ✓
-                </span>
+              <div className="text-center space-y-1">
+                <div className="px-8 py-3 border border-gold/40 bg-gold/10">
+                  <span className="font-body text-gold text-sm font-semibold uppercase tracking-widest">
+                    You&apos;re Enlisted ✓
+                  </span>
+                </div>
+                {statusMsg && (
+                  <p className="font-body text-gold/60 text-xs">{statusMsg}</p>
+                )}
               </div>
             ) : (
-              <form
-                onSubmit={handleSubmit}
-                className="flex flex-col sm:flex-row gap-3"
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="flex-1 min-w-0 sm:w-56 px-4 py-3 bg-white/5 border border-white/15 text-white placeholder:text-silver/30 font-body text-sm focus:outline-none focus:border-gold/60 transition-colors"
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-6 py-3 bg-gold font-body font-semibold text-xs uppercase tracking-widest text-marine-black hover:bg-gold/80 transition-colors disabled:opacity-60 whitespace-nowrap"
+              <div className="space-y-2">
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex flex-col sm:flex-row gap-3"
                 >
-                  {loading ? "Enlisting…" : "Enlist Now"}
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="flex-1 min-w-0 sm:w-56 px-4 py-3 bg-white/5 border border-white/15 text-white placeholder:text-silver/30 font-body text-sm focus:outline-none focus:border-gold/60 transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-6 py-3 bg-gold font-body font-semibold text-xs uppercase tracking-widest text-marine-black hover:bg-gold/80 transition-colors disabled:opacity-60 whitespace-nowrap"
+                  >
+                    {loading ? "Enlisting…" : "Enlist Now"}
+                  </button>
+                </form>
+                {statusMsg && (
+                  <p className={`font-body text-xs ${isError ? "text-scarlet" : "text-gold/70"}`}>
+                    {statusMsg}
+                  </p>
+                )}
+              </div>
             )}
           </div>
         </div>
