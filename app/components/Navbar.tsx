@@ -44,9 +44,9 @@ export default function Navbar() {
               <Image
                 src="/images/Logo.png"
                 alt="1775 Gaming"
-                width={160}
-                height={50}
-                className="h-10 w-auto"
+                width={200}
+                height={60}
+                className="h-12 w-auto"
                 onError={() => setLogoError(true)}
                 priority
               />

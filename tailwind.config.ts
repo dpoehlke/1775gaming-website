@@ -30,7 +30,7 @@ const config: Config = {
         },
       },
       animation: {
-        "fade-in-up": "fade-in-up 0.7s ease-out forwards",
+        "fade-in-up": "fade-in-up 0.7s ease-out both",
         "bounce-slow": "bounce-slow 2s ease-in-out infinite",
       },
     },

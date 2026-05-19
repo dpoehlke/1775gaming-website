@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 /* --------------------------------------------------------------------------
-   Star field — pure CSS animation, no external libraries.
-   Stars are generated on the client to avoid hydration mismatch.
-   Three layers (small / medium / large) scroll at different speeds,
-   each duplicated so the loop is seamless.
+   Star field — pure CSS, no external libraries.
+   Generated on the client only to avoid SSR hydration mismatch.
+   Three layers scroll at different speeds; each layer is duplicated
+   so the loop is perfectly seamless.
 -------------------------------------------------------------------------- */
 function StarField() {
   const [layers, setLayers] = useState<{
@@ -30,38 +30,25 @@ function StarField() {
 
   if (!layers) return null;
 
-  const starStyle = (
-    shadow: string,
-    size: number,
-    duration: string
-  ): React.CSSProperties => ({
+  const base = (shadow: string, size: number, dur: string, topOffset = 0): React.CSSProperties => ({
     position: "absolute",
-    top: 0,
+    top: topOffset,
     left: 0,
     width: `${size}px`,
     height: `${size}px`,
     borderRadius: "50%",
     boxShadow: shadow,
-    animation: `animStars ${duration} linear infinite`,
-  });
-
-  const starStyleOffset = (
-    shadow: string,
-    size: number,
-    duration: string
-  ): React.CSSProperties => ({
-    ...starStyle(shadow, size, duration),
-    top: "-2000px",
+    animation: `animStars ${dur} linear infinite`,
   });
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      <div style={starStyle(layers.sm, 1, "110s")} />
-      <div style={starStyleOffset(layers.sm, 1, "110s")} />
-      <div style={starStyle(layers.md, 2, "75s")} />
-      <div style={starStyleOffset(layers.md, 2, "75s")} />
-      <div style={starStyle(layers.lg, 3, "50s")} />
-      <div style={starStyleOffset(layers.lg, 3, "50s")} />
+      <div style={base(layers.sm, 1, "110s")} />
+      <div style={base(layers.sm, 1, "110s", -2000)} />
+      <div style={base(layers.md, 2, "75s")} />
+      <div style={base(layers.md, 2, "75s", -2000)} />
+      <div style={base(layers.lg, 3, "50s")} />
+      <div style={base(layers.lg, 3, "50s", -2000)} />
     </div>
   );
 }
@@ -72,15 +59,31 @@ function StarField() {
 export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-marine-black overflow-hidden">
-      {/* Animated star field */}
+
+      {/* ── Layer 1: animated star field ── */}
       <StarField />
 
-      {/* Depth gradient — vignette keeps stars readable without blowing out center */}
+      {/* ── Layer 2: edge vignette so stars fade at the borders ── */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 90% 70% at 50% 50%, transparent 0%, rgba(13,13,13,0.55) 55%, #0D0D0D 100%)",
+            "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 0%, rgba(13,13,13,0.5) 60%, #0D0D0D 100%)",
+        }}
+      />
+
+      {/* ── Layer 3: scarlet dramatic glow behind the headline ── */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          top: "15%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "900px",
+          height: "500px",
+          background:
+            "radial-gradient(ellipse 60% 60% at 50% 50%, rgba(204,0,0,0.18) 0%, rgba(204,0,0,0.06) 45%, transparent 70%)",
+          filter: "blur(8px)",
         }}
       />
 
@@ -88,15 +91,16 @@ export default function HeroSection() {
       <div className="relative z-10 text-center px-4 max-w-5xl mx-auto space-y-7">
 
         {/* Small-caps label */}
-        <p
-          className="font-body text-xs sm:text-sm text-gold tracking-[0.4em] uppercase opacity-0 animate-fade-in-up"
-        >
+        {/* NOTE: opacity-0 is REMOVED. animation-fill-mode:both handles the
+            initial hidden state during the delay (backwards fill) and keeps
+            the final state after completion (forwards fill). */}
+        <p className="font-body text-xs sm:text-sm text-gold tracking-[0.4em] uppercase animate-fade-in-up">
           1775 Gaming LLC Presents
         </p>
 
-        {/* Giant headline */}
+        {/* Giant headline — at least 80px on desktop via clamp */}
         <h1
-          className="font-heading text-[clamp(3.5rem,10vw,10rem)] text-white leading-none tracking-wide opacity-0 animate-fade-in-up"
+          className="font-heading text-[clamp(4rem,9vw,9rem)] text-white leading-none tracking-wide animate-fade-in-up"
           style={{ animationDelay: "0.2s" }}
         >
           THE FUTURE OF
@@ -106,7 +110,7 @@ export default function HeroSection() {
 
         {/* Sub-headline */}
         <p
-          className="font-body text-silver/75 text-base sm:text-lg lg:text-xl tracking-wider opacity-0 animate-fade-in-up"
+          className="font-body text-silver/80 text-base sm:text-lg lg:text-xl tracking-wider animate-fade-in-up"
           style={{ animationDelay: "0.4s" }}
         >
           AI-Powered Gameplay
@@ -118,7 +122,7 @@ export default function HeroSection() {
 
         {/* CTA buttons */}
         <div
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3 opacity-0 animate-fade-in-up"
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3 animate-fade-in-up"
           style={{ animationDelay: "0.6s" }}
         >
           <Link
