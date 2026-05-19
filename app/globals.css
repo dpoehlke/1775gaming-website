@@ -17,6 +17,12 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-bebas-neue), sans-serif;
 }
 
+/* Star field animation — used by HeroSection via inline styles */
+@keyframes animStars {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-2000px); }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
