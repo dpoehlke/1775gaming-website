@@ -24,7 +24,7 @@ function BadgeImage() {
 
   return (
     <Image
-      src="/images/omniverse-badge.png"
+      src="/images/Omniverse-Badge.png"
       alt="Omniverse: Ascension badge"
       width={480}
       height={580}
