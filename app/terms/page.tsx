@@ -161,6 +161,105 @@ export default function TermsPage() {
           />
         </Section>
 
+        <Section number="4a." title="ARTIFICIAL INTELLIGENCE INTEGRITY AND PROHIBITED CONDUCT">
+          <P>
+            Omniverse: Ascension operates on a proprietary AI-driven Game Master
+            engine powered by Large Language Models. The integrity, safety, and
+            intended operation of this AI system is fundamental to the experience
+            of all players and is actively protected by 1775 Gaming LLC.
+          </P>
+          <div className="mt-4 space-y-5">
+            <p className="font-body text-white text-sm font-semibold">
+              Prohibited AI Conduct:
+            </p>
+            <p className="font-body text-silver/70 text-sm leading-relaxed -mt-2">
+              The following actions are strictly prohibited and constitute a
+              material breach of these Terms:
+            </p>
+            <div className="space-y-5">
+              <div className="flex items-start gap-4">
+                <span className="font-body text-gold text-sm font-semibold flex-shrink-0 w-6">(i)</span>
+                <div>
+                  <p className="font-body text-white text-sm font-semibold mb-1">
+                    Prompt Injection
+                  </p>
+                  <p className="font-body text-silver/70 text-sm leading-relaxed">
+                    Any attempt to introduce malicious, manipulative, or
+                    unauthorized instructions into the AI system through player
+                    inputs, including but not limited to attempts to override
+                    system prompts, alter AI behavior, or circumvent the
+                    State-Machine Engine&apos;s rule enforcement logic.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className="font-body text-gold text-sm font-semibold flex-shrink-0 w-6">(ii)</span>
+                <div>
+                  <p className="font-body text-white text-sm font-semibold mb-1">
+                    Jailbreaking
+                  </p>
+                  <p className="font-body text-silver/70 text-sm leading-relaxed">
+                    Any attempt to manipulate, deceive, or coerce the AI Game
+                    Master into producing outputs that violate applicable law,
+                    these Terms, or the content restrictions set forth in
+                    Section 4, including through roleplay framing, hypothetical
+                    scenarios, character impersonation, or multi-step
+                    conversational manipulation.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className="font-body text-gold text-sm font-semibold flex-shrink-0 w-6">(iii)</span>
+                <div>
+                  <p className="font-body text-white text-sm font-semibold mb-1">
+                    Exploitation of AI Outputs
+                  </p>
+                  <p className="font-body text-silver/70 text-sm leading-relaxed">
+                    Any attempt to extract, reproduce, reverse-engineer, or
+                    weaponize AI-generated content or system behavior for
+                    purposes outside of personal gameplay, including using AI
+                    outputs to facilitate illegal activity, harassment, or the
+                    creation of harmful content.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className="font-body text-gold text-sm font-semibold flex-shrink-0 w-6">(iv)</span>
+                <div>
+                  <p className="font-body text-white text-sm font-semibold mb-1">
+                    Malicious Code Injection
+                  </p>
+                  <p className="font-body text-silver/70 text-sm leading-relaxed">
+                    Any attempt to introduce malicious code, scripts, or
+                    automated inputs into the game interface, AI inference
+                    pipeline, or any associated API endpoint.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-white/8 pt-5 space-y-4">
+              <P>
+                <span className="text-white font-semibold">Enforcement: </span>
+                1775 Gaming LLC reserves the right, in its sole discretion, to
+                immediately suspend or permanently terminate the account of any
+                user found to be in violation of this section, without refund and
+                without prior notice. Egregious violations — including those
+                involving illegal content generation or attempted system
+                compromise — may be referred to appropriate law enforcement
+                authorities.
+              </P>
+              <P>
+                <span className="text-white font-semibold">Acknowledgment: </span>
+                By using Omniverse: Ascension, you acknowledge that the AI Game
+                Master is a protected system. You agree to interact with it
+                solely within the bounds of legitimate gameplay. You further
+                acknowledge that 1775 Gaming LLC actively monitors AI
+                interactions for policy violations.
+              </P>
+            </div>
+          </div>
+        </Section>
+
         <Section number="5." title="BIOMETRIC AND VISUAL DATA">
           <P>
             For tiers supporting Face-to-Character features, you grant 1775
