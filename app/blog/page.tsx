@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const CATEGORIES = [
   "ALL",
+  "GAME ANNOUNCEMENT",
   "GAME DEV",
   "AR / AI TECH",
   "HEALTH GAMING",
@@ -28,13 +29,13 @@ interface Post {
 
 const POSTS: Post[] = [
   {
-    slug: "building-ai-game-master",
-    category: "GAME DEV",
-    date: "May 14, 2026",
-    readTime: "8 min read",
-    title: "Building the AI Game Master: How We're Making Every Session Unique",
+    slug: "ai-game-master-coming-to-mobile",
+    category: "GAME ANNOUNCEMENT",
+    date: "May 17, 2025",
+    readTime: "5 min read",
+    title: "BREAKING: An AI Game Master Is Coming to Mobile — And It Never Cancels",
     excerpt:
-      "Deep dive into the architecture behind Omniverse's adaptive narrative engine — an AI system that crafts personalized missions, remembers your choices, and reacts to your playstyle in real time.",
+      "Mobile gamers, the tabletop RPG you've been waiting your whole life to carry in your pocket is almost here — and it thinks faster than any human GM alive.",
     gradient: "from-scarlet/30 via-scarlet/10 to-transparent",
     accentColor: "text-scarlet",
     featured: true,
@@ -286,9 +287,12 @@ export default function BlogPage() {
                   <span className="font-body text-xs text-silver/35">
                     {featured.readTime}
                   </span>
-                  <span className="font-body text-sm font-semibold text-scarlet uppercase tracking-wider">
+                  <Link
+                    href={`/blog/${featured.slug}`}
+                    className="font-body text-sm font-semibold text-scarlet uppercase tracking-wider hover:text-scarlet/75 transition-colors"
+                  >
                     Read Article →
-                  </span>
+                  </Link>
                 </div>
               </div>
             </article>

@@ -11,12 +11,13 @@ export const metadata: Metadata = {
 const GENRE_TAGS = ["Mobile RPG", "AR Combat", "AI-Powered", "Health Integration"];
 
 const FEATURES = [
-  "AI Game Master that adapts to your playstyle",
-  "Augmented Reality combat system",
-  "Real-world health and fitness integration",
-  "Built on Mutants & Masterminds 3e framework",
-  "Solo and cooperative multiplayer modes",
-  "Dynamic story missions that never repeat",
+  "Original world building and storylines",
+  "Fully customizable character sheets with pre-built templates",
+  "World building based on real-world data — local landmarks, weather, and current events woven into your campaign",
+  "Customized character portraits based on your archetype, demographics, and appearance",
+  "Custom animations, idle movements, and a personalized Origin Story Reveal you can share to social media",
+  "AI Game Master powered by Gemini Imagen 3",
+  "Persistent consequences — your choices echo across every session",
 ];
 
 const STATS = [
@@ -134,25 +135,16 @@ export default function GamesPage() {
               {/* Description */}
               <div className="space-y-4">
                 <p className="font-body text-silver/75 text-sm lg:text-base leading-relaxed">
-                  Omniverse: Ascension is a next-generation mobile RPG built on
-                  the legendary{" "}
-                  <span className="text-gold font-semibold">
-                    Mutants &amp; Masterminds
-                  </span>{" "}
-                  framework. Choose your hero, build your powers, and battle
-                  villains in a living world driven by an intelligent AI Game
-                  Master.
+                  Omniverse: Ascension is a first-of-its-kind immersive
+                  AI-driven single player RPG. Create your Superhero, patrol
+                  your city streets and keep the people of your hometown safe.
+                  Using advanced AI technology to cooperatively tell the story
+                  of YOU.
                 </p>
                 <p className="font-body text-silver/75 text-sm lg:text-base leading-relaxed">
-                  Experience combat like never before with augmented reality
-                  battles that bring the fight into your real-world environment.
-                  Your kitchen becomes a battlefield. Your street becomes an
-                  arena.
-                </p>
-                <p className="font-body text-silver/75 text-sm lg:text-base leading-relaxed">
-                  Your real-world health data powers your hero. Walk more, fight
-                  harder. Work out, unlock abilities. Omniverse: Ascension is
-                  the first game that makes getting healthy a superpower.
+                  Every action you take could save the world — or damn Earth to
+                  destruction and enslavement by an alien race known only as{" "}
+                  <span className="text-gold font-semibold">The Collective</span>.
                 </p>
               </div>
 
@@ -169,6 +161,11 @@ export default function GamesPage() {
                   </li>
                 ))}
               </ul>
+
+              {/* Closing line */}
+              <p className="font-heading text-2xl lg:text-3xl text-scarlet tracking-wide pt-1">
+                Are you brave enough to risk it all to save Earth?
+              </p>
 
               {/* CTA buttons */}
               <div className="flex flex-wrap gap-4 pt-2">

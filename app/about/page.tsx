@@ -45,8 +45,30 @@ export default function AboutPage() {
             ABOUT 1775 GAMING
           </h1>
           <p className="font-body text-silver/70 text-lg leading-relaxed">
-            Born from a vision to revolutionize mobile gaming through AI, AR,
-            and human health
+            Veteran Owned and Operated. Built by a Marine, a lifelong gamer,
+            and a dreamer who refused to wait for permission.
+          </p>
+        </div>
+      </section>
+
+      {/* ─── VETERAN OWNED ─── */}
+      <section className="py-10 px-4 bg-charcoal border-t border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-3 text-center">
+          {/* Gold star */}
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-8 h-8 text-gold"
+            aria-hidden="true"
+          >
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          <p className="font-heading text-3xl lg:text-4xl text-gold tracking-[0.2em] uppercase">
+            Veteran Owned &amp; Operated
+          </p>
+          <p className="font-body text-silver/60 text-sm max-w-xl">
+            1775 Gaming LLC is proud to be founded and operated by a United
+            States Marine veteran
           </p>
         </div>
       </section>
@@ -100,9 +122,10 @@ export default function AboutPage() {
           <p className="font-body text-silver/70 text-base lg:text-lg leading-relaxed">
             1775 marks the birth of the American fighting spirit — the year
             citizen soldiers stood against impossible odds and changed the world
-            forever. At 1775 Gaming, we carry that same spirit into every game
-            we build. We are the underdogs. We are the innovators. And we are
-            just getting started.
+            forever. It is also the year the United States Marine Corps was
+            founded at Tun Tavern in Philadelphia. At 1775 Gaming, we carry
+            that same spirit of discipline, courage, and relentless innovation
+            into every game we build.
           </p>
         </div>
       </section>
@@ -147,7 +170,7 @@ export default function AboutPage() {
             </h2>
           </div>
 
-          <div className="max-w-lg mx-auto bg-charcoal border border-white/5 p-10 text-center">
+          <div className="max-w-2xl mx-auto bg-charcoal border border-white/5 p-10 text-center">
             {/* Avatar circle with initials */}
             <div className="w-24 h-24 rounded-full bg-scarlet flex items-center justify-center mx-auto mb-6 ring-4 ring-scarlet/20">
               <span className="font-heading text-3xl text-white tracking-wider">
@@ -158,16 +181,62 @@ export default function AboutPage() {
             <h3 className="font-heading text-3xl text-white tracking-wide mb-1">
               Darin Oehlke
             </h3>
-            <p className="font-body text-gold text-xs uppercase tracking-widest mb-6">
-              Founder &amp; Lead Developer
+            <p className="font-body text-gold text-xs uppercase tracking-widest mb-2">
+              Founder, Lead Developer &amp; United States Marine (Ret.)
             </p>
-            <p className="font-body text-silver/70 text-sm leading-relaxed mb-6">
-              Darin Oehlke is the founder and lead developer of 1775 Gaming LLC.
-              With a vision for AI-powered mobile gaming that integrates
-              real-world health data and augmented reality, Darin is building the
-              next generation of mobile gaming from the ground up.
-            </p>
-            <p className="font-body text-silver/40 text-xs uppercase tracking-widest">
+            {/* Semper Fi badge */}
+            <div className="inline-block border border-gold/40 bg-gold/10 px-4 py-1.5 mb-6">
+              <span className="font-body text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
+                ✦ Semper Fidelis ✦
+              </span>
+            </div>
+
+            {/* Full bio — his voice, untouched */}
+            <div className="space-y-4 text-left">
+              <p className="font-body text-silver/70 text-sm leading-relaxed">
+                The logo and the name aren&apos;t just for show. My Beloved Corps
+                taught me many things, introduced me to some of the greatest
+                people I&apos;ve ever known, and made me more than I could have
+                ever imagined. I&apos;ve been and done a lot of things in my
+                life, but since the wee age of 18 I have always been — and
+                always will be — a United States Marine.
+              </p>
+              <p className="font-body text-silver/70 text-sm leading-relaxed">
+                To my Brothers and Sisters out there; past, present, and future:
+                Semper Fidelis. To my cousins, keep pushing for the goal line,
+                we&apos;re all cheering for you. To that weird uncle (looking at
+                you, Space Force) — figure your shit out fast. My Active Kin are
+                gonna need Space Chauffeurs soon enough.
+              </p>
+              <p className="font-body text-silver/70 text-sm leading-relaxed">
+                I&apos;ve been a gamer all my life. I was introduced to fantasy
+                novels — the Dragonlance Trilogy, to be exact — before I hit
+                double digits. I&apos;ve played TTRPGs like D&amp;D (beginning
+                with the original box set through every version to current),
+                Cyberpunk 2020, GURPS, Pathfinder, all of White Wolf&apos;s
+                titles, and one of my very favorites: Mutants &amp; Masterminds.
+                I&apos;ve been a player and a Storyteller/Game Master in all of
+                them.
+              </p>
+              <p className="font-body text-silver/70 text-sm leading-relaxed">
+                The first title I&apos;m producing is a mobile game built on
+                M&amp;M. Regardless of your personal feelings on AI, the
+                advances in LLMs provide a unique opportunity. With explicit
+                instructions to adhere to the core rulebooks, several hundred
+                pages of custom homebrew lore, original world and campaign
+                building, and dozens of fully fleshed original NPCs and villains
+                — many of them characters I played myself over the years — I am
+                bringing to the palm of your hand the kind of immersive world
+                you might get sitting at someone&apos;s dining room table on a
+                Saturday afternoon.
+              </p>
+              <p className="font-body text-silver/70 text-sm leading-relaxed">
+                I hope you enjoy Omniverse: Ascension half as much as I have had
+                building these storylines over the years.
+              </p>
+            </div>
+
+            <p className="font-body text-silver/40 text-xs uppercase tracking-widest mt-6">
               📍 Weatherby Lake, MO
             </p>
           </div>
