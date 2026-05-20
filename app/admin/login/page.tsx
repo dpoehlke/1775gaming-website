@@ -10,174 +10,120 @@ const supabase = createClient(
 
 const SUPERADMIN_UID = 'a4e1c087-2f83-4f94-9ec6-113121c744a1'
 
-const INPUT_STYLE: React.CSSProperties = {
-  width: '100%',
-  background: '#0D0D0D',
-  border: '1px solid #333',
-  borderRadius: '4px',
-  color: 'white',
-  padding: '12px',
-  fontSize: '14px',
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
-// ── Inner form (needs useSearchParams — must be in Suspense) ─────────────────
+// ── Inner form (needs useSearchParams — must be in Suspense) ──────────────────
 
 function LoginForm() {
-  const router        = useRouter()
-  const searchParams  = useSearchParams()
-  const redirectTo    = searchParams.get('redirect') || '/admin'
+  const router       = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo   = searchParams.get('redirect') || '/admin'
 
-  const [email,    setEmail]    = useState('')
-  const [password, setPassword] = useState('')
   const [status,   setStatus]   = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const [attempts, setAttempts] = useState(0)
-  const [locked,   setLocked]   = useState(false)
-  const [lockSecs, setLockSecs] = useState(0)
 
-  // Redirect immediately if already logged in as SuperAdmin
+  // Already logged in as SuperAdmin? Skip the login page.
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user.id === SUPERADMIN_UID) router.push(redirectTo)
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Lockout countdown
-  useEffect(() => {
-    if (lockSecs <= 0) {
-      if (locked) setLocked(false)
-      return
-    }
-    const t = setTimeout(() => setLockSecs((s) => s - 1), 1000)
-    return () => clearTimeout(t)
-  }, [lockSecs, locked])
-
-  const handleLogin = async () => {
-    if (locked || status === 'loading') return
-
-    if (attempts >= 5) {
-      setLocked(true)
-      setLockSecs(300)
-      setErrorMsg('Too many attempts. Locked for 5 minutes.')
-      return
-    }
-
+  const handleGoogleLogin = async () => {
     setStatus('loading')
     setErrorMsg('')
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        // Pass the intended destination so the callback can redirect correctly
+        redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+      },
+    })
 
-      if (data.user?.id !== SUPERADMIN_UID) {
-        await supabase.auth.signOut()
-        setAttempts((a) => a + 1)
-        setStatus('error')
-        setErrorMsg(`Access denied. Attempt ${attempts + 1} of 5.`)
-        return
-      }
-
-      router.push(redirectTo)
-      router.refresh()
-    } catch {
-      setAttempts((a) => a + 1)
+    if (error) {
       setStatus('error')
-      setErrorMsg(`Authentication failed. Attempt ${attempts + 1} of 5.`)
+      setErrorMsg('Could not start Google sign-in. Please try again.')
     }
-  }
-
-  const onKey = (e: React.KeyboardEvent) => { if (e.key === 'Enter') handleLogin() }
-
-  if (locked) {
-    return (
-      <div style={{ textAlign: 'center', color: '#CC0000', padding: '20px' }}>
-        <div style={{ fontSize: '52px' }}>🔒</div>
-        <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', marginTop: '12px' }}>
-          ACCESS LOCKED
-        </div>
-        <div style={{ color: '#C0C0C0', marginTop: '8px' }}>
-          Try again in {Math.floor(lockSecs / 60)}:{String(lockSecs % 60).padStart(2, '0')}
-        </div>
-      </div>
-    )
+    // On success the browser navigates away to Google — no further action needed here
   }
 
   return (
     <>
-      <div style={{ marginBottom: '20px' }}>
-        <label style={{ display: 'block', color: '#B8860B', fontSize: '11px', letterSpacing: '0.15em', marginBottom: '8px' }}>
-          EMAIL
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onKeyDown={onKey}
-          autoComplete="email"
-          style={INPUT_STYLE}
-        />
-      </div>
-
-      <div style={{ marginBottom: '28px' }}>
-        <label style={{ display: 'block', color: '#B8860B', fontSize: '11px', letterSpacing: '0.15em', marginBottom: '8px' }}>
-          PASSWORD
-        </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={onKey}
-          autoComplete="current-password"
-          style={INPUT_STYLE}
-        />
-      </div>
+      <button
+        onClick={handleGoogleLogin}
+        disabled={status === 'loading'}
+        style={{
+          width:          '100%',
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          gap:            '12px',
+          background:     status === 'loading' ? '#222' : '#fff',
+          color:          '#1A1A1A',
+          border:         '2px solid #B8860B',
+          borderRadius:   '4px',
+          padding:        '14px 20px',
+          fontFamily:     'IBM Plex Sans, sans-serif',
+          fontSize:       '15px',
+          fontWeight:     600,
+          letterSpacing:  '0.02em',
+          cursor:         status === 'loading' ? 'not-allowed' : 'pointer',
+          opacity:        status === 'loading' ? 0.6 : 1,
+          transition:     'opacity 0.2s, background 0.2s',
+        }}
+      >
+        {/* Google "G" logo */}
+        <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+          <path fill="none" d="M0 0h48v48H0z"/>
+        </svg>
+        {status === 'loading' ? 'Redirecting to Google…' : 'Sign in with Google'}
+      </button>
 
       {errorMsg && (
         <div style={{
-          background: '#2E0D0D', border: '1px solid #CC0000', borderRadius: '4px',
-          padding: '12px', color: '#CC0000', fontSize: '13px', marginBottom: '20px', textAlign: 'center',
+          marginTop:    '16px',
+          background:   '#2E0D0D',
+          border:       '1px solid #CC0000',
+          borderRadius: '4px',
+          padding:      '12px',
+          color:        '#CC0000',
+          fontSize:     '13px',
+          textAlign:    'center',
         }}>
           {errorMsg}
         </div>
       )}
 
-      <button
-        onClick={handleLogin}
-        disabled={status === 'loading' || !email || !password}
-        style={{
-          width: '100%',
-          background: status === 'loading' ? '#333' : '#CC0000',
-          color: 'white',
-          border: '2px solid #B8860B',
-          borderRadius: '4px',
-          padding: '14px',
-          fontFamily: 'Bebas Neue, sans-serif',
-          fontSize: '18px',
-          letterSpacing: '0.1em',
-          cursor: status === 'loading' || !email || !password ? 'not-allowed' : 'pointer',
-          opacity: !email || !password ? 0.6 : 1,
-        }}
-      >
-        {status === 'loading' ? 'AUTHENTICATING…' : 'ENTER COMMAND CENTER'}
-      </button>
+      <p style={{ color: '#555', fontSize: '12px', textAlign: 'center', marginTop: '20px', lineHeight: 1.5 }}>
+        Only the authorized administrator account<br/>can access this area.
+      </p>
     </>
   )
 }
 
-// ── Page shell (Suspense required for useSearchParams in Next.js 14) ─────────
+// ── Page shell ────────────────────────────────────────────────────────────────
 
 export default function AdminLoginPage() {
   return (
     <div style={{
-      background: '#0D0D0D', minHeight: '100vh',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'IBM Plex Sans, sans-serif',
+      background:      '#0D0D0D',
+      minHeight:       '100vh',
+      display:         'flex',
+      alignItems:      'center',
+      justifyContent:  'center',
+      fontFamily:      'IBM Plex Sans, sans-serif',
     }}>
       <div style={{
-        background: '#1A1A1A', border: '1px solid #333', borderTop: '3px solid #CC0000',
-        padding: '48px', borderRadius: '8px', width: '100%', maxWidth: '400px',
+        background:   '#1A1A1A',
+        border:       '1px solid #333',
+        borderTop:    '3px solid #CC0000',
+        padding:      '48px',
+        borderRadius: '8px',
+        width:        '100%',
+        maxWidth:     '380px',
       }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -190,12 +136,11 @@ export default function AdminLoginPage() {
           <div style={{ width: '40px', height: '2px', background: '#CC0000', margin: '16px auto 0' }} />
         </div>
 
-        {/* Form wrapped in Suspense so useSearchParams works */}
-        <Suspense fallback={<div style={{ color: '#666', textAlign: 'center' }}>Loading…</div>}>
+        <Suspense fallback={<div style={{ color: '#666', textAlign: 'center', padding: '20px' }}>Loading…</div>}>
           <LoginForm />
         </Suspense>
 
-        <div style={{ textAlign: 'center', marginTop: '24px', color: '#444', fontSize: '11px', letterSpacing: '0.1em' }}>
+        <div style={{ textAlign: 'center', marginTop: '28px', color: '#444', fontSize: '11px', letterSpacing: '0.1em' }}>
           RESTRICTED ACCESS — AUTHORIZED PERSONNEL ONLY
         </div>
       </div>
