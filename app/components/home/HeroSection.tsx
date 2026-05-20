@@ -141,7 +141,7 @@ export default function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce-slow">
+      <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 animate-bounce-slow">
         <span className="font-body text-[10px] text-silver/40 uppercase tracking-[0.35em]">
           Scroll
         </span>
