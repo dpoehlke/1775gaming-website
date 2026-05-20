@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import BetaForm from "./BetaForm";
 
 export const metadata: Metadata = {
-  title: "Beta Test | 1775 Gaming LLC",
+  title: "Join the Beta",
   description:
-    "Apply to beta test Omniverse: Ascension — the AI-powered mobile RPG from 1775 Gaming LLC.",
+    "Become a founding beta tester for Omniverse: Ascension. Get early access, shape the game, and earn permanent Founder status. Limited spots available — apply now.",
 };
 
 /* ─── Benefit icons (server-safe SVGs, no hooks) ─── */

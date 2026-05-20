@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | 1775 Gaming LLC",
+  title: "Privacy Policy",
   description:
-    "Privacy Policy for 1775 Gaming LLC and Omniverse: Ascension.",
+    "1775 Gaming LLC privacy policy covering data collection, AI processing, health data, and your rights as a player of Omniverse: Ascension.",
 };
 
 function Section({

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | 1775 Gaming LLC",
+  title: "Terms of Service",
   description:
-    "Terms of Service for Omniverse: Ascension and 1775 Gaming LLC services.",
+    "Terms of Service for 1775 Gaming LLC and Omniverse: Ascension. Covers subscription tiers, AI gameplay rules, biometric data, and user conduct.",
 };
 
 function Section({

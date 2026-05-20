@@ -1,10 +1,16 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { BlogPostSchema } from "../../components/StructuredData";
 
 export const metadata: Metadata = {
-  title: "BREAKING: An AI Game Master Is Coming to Mobile — And It Never Cancels | 1775 Gaming",
+  title: "An AI Game Master Is Coming to Mobile — And It Never Cancels",
   description:
-    "Mobile gamers, the tabletop RPG you've been waiting your whole life to carry in your pocket is almost here — and it thinks faster than any human GM alive.",
+    "The tabletop RPG experience you have been waiting for is coming to mobile. Omniverse: Ascension features an AI Game Master that never cancels, never forgets, and adapts to every choice you make.",
+  openGraph: {
+    type: "article",
+    publishedTime: "2025-05-17T00:00:00Z",
+    authors: ["Darin Oehlke"],
+  },
 };
 
 const TAGS = [
@@ -29,6 +35,12 @@ function BulletItem({ children }: { children: React.ReactNode }) {
 export default function BlogPostPage() {
   return (
     <div className="bg-marine-black min-h-screen">
+      <BlogPostSchema
+        title="BREAKING: An AI Game Master Is Coming to Mobile — And It Never Cancels"
+        description="The tabletop RPG experience you have been waiting for is coming to mobile."
+        publishedDate="2025-05-17"
+        slug="ai-game-master-coming-to-mobile"
+      />
 
       {/* ─── HERO ─── */}
       <section className="relative py-24 px-4 border-b border-white/8 overflow-hidden">

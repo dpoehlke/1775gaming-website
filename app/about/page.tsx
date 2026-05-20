@@ -2,9 +2,9 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About | 1775 Gaming LLC",
+  title: "About",
   description:
-    "Learn about 1775 Gaming LLC — our mission to revolutionize mobile gaming through AI, augmented reality, and real-world health integration.",
+    "Veteran owned and operated. 1775 Gaming LLC was founded by a United States Marine with a vision to revolutionize mobile gaming through AI, augmented reality, and real-world health integration.",
 };
 
 function ValueCard({

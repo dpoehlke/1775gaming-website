@@ -1,11 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { VideoGameSchema } from "../components/StructuredData";
 
 export const metadata: Metadata = {
-  title: "Games | 1775 Gaming LLC",
+  title: "Games",
   description:
-    "Explore 1775 Gaming titles — Omniverse: Ascension, an AI-powered mobile RPG with AR combat and real-world health integration.",
+    "Play Omniverse: Ascension — a first-of-its-kind AI-powered mobile RPG. Create your superhero, battle The Collective, and experience true TTRPG gameplay on mobile. Built on Mutants & Masterminds 3e.",
+  openGraph: {
+    title: "Omniverse: Ascension | 1775 Gaming",
+    description:
+      "AI-powered mobile RPG with AR combat, health integration, and an AI Game Master that never cancels.",
+    images: [{ url: "/images/Omniverse-Logo.png" }],
+  },
 };
 
 const GENRE_TAGS = ["Mobile RPG", "AR Combat", "AI-Powered", "Health Integration"];
@@ -48,6 +55,7 @@ function PadlockIcon() {
 export default function GamesPage() {
   return (
     <>
+      <VideoGameSchema />
       {/* ─── HERO ─── */}
       <section className="relative flex items-center justify-center min-h-[52vh] py-28 px-4 bg-marine-black overflow-hidden">
         <div
