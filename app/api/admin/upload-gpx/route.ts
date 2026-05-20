@@ -20,7 +20,6 @@ const supabaseAdmin = createClient(
 export async function POST(request: NextRequest) {
   try {
     const formData    = await request.formData()
-    const password    = formData.get('password')   as string
     const file        = formData.get('gpx')        as File | null
     const missionName = formData.get('name')        as string | null
     const missionType = (formData.get('type')       as string) || 'patrol'
@@ -29,11 +28,7 @@ export async function POST(request: NextRequest) {
     const state       = formData.get('state')       as string | null
     const isTest      = formData.get('is_test') === 'true'
 
-    // ── Server-side auth ────────────────────────────────────────────────────
-    if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
+    // Auth is enforced by middleware — any request reaching here is the SuperAdmin.
     if (!file) {
       return NextResponse.json({ error: 'No GPX file provided' }, { status: 400 })
     }

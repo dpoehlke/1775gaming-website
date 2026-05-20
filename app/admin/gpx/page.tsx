@@ -39,7 +39,6 @@ export default function GPXUploadPage() {
   const [status, setStatus] = useState<UploadStatus>('idle')
   const [result, setResult] = useState<UploadResult | null>(null)
   const [form,   setForm]   = useState({
-    password:   '',
     name:       '',
     type:       'patrol',
     difficulty: 'normal',
@@ -59,7 +58,6 @@ export default function GPXUploadPage() {
 
     const formData = new FormData()
     formData.append('gpx',        file)
-    formData.append('password',   form.password)
     formData.append('name',       form.name)
     formData.append('type',       form.type)
     formData.append('difficulty', form.difficulty)
@@ -108,18 +106,6 @@ export default function GPXUploadPage() {
         border:       '1px solid #333',
         maxWidth:     '620px',
       }}>
-
-        {/* Password */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={LABEL_STYLE}>ADMIN PASSWORD</label>
-          <input
-            type="password"
-            value={form.password}
-            onChange={set('password')}
-            placeholder="Enter admin password"
-            style={INPUT_STYLE}
-          />
-        </div>
 
         {/* File picker */}
         <div style={{ marginBottom: '20px' }}>
@@ -202,7 +188,7 @@ export default function GPXUploadPage() {
         {/* Submit */}
         <button
           onClick={handleSubmit}
-          disabled={status === 'uploading' || !file || !form.password}
+          disabled={status === 'uploading' || !file}
           style={{
             width:         '100%',
             background:    status === 'uploading' ? '#555' : '#CC0000',
@@ -213,8 +199,8 @@ export default function GPXUploadPage() {
             fontFamily:    'Bebas Neue, sans-serif',
             letterSpacing: '0.12em',
             borderRadius:  '4px',
-            cursor:        status === 'uploading' || !file || !form.password ? 'not-allowed' : 'pointer',
-            opacity:       !file || !form.password ? 0.6 : 1,
+            cursor:        status === 'uploading' || !file ? 'not-allowed' : 'pointer',
+            opacity:       !file ? 0.6 : 1,
             transition:    'background 0.2s',
           }}
         >
