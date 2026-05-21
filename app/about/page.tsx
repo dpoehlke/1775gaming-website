@@ -204,7 +204,7 @@ export default function AboutPage() {
               <p className="font-body text-silver/70 text-sm leading-relaxed">
                 To my Brothers and Sisters out there; past, present, and future:
                 Semper Fidelis. To my cousins, keep pushing for the goal line,
-                we&apos;re all cheering for you. To that weird uncle (looking at
+                we&apos;re all cheering for you. To that weird nephew (looking at
                 you, Space Force) — figure your shit out fast. My Active Kin are
                 gonna need Space Chauffeurs soon enough.
               </p>
