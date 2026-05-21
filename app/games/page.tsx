@@ -30,7 +30,7 @@ const FEATURES = [
 const STATS = [
   { value: "M&M 3e", label: "Framework" },
   { value: "iOS + Android", label: "Platform" },
-  { value: "2025", label: "Beta Year" },
+  { value: "2026", label: "Beta Year" },
   { value: "Free to Play", label: "Model" },
 ];
 
