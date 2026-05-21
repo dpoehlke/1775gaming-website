@@ -6,7 +6,7 @@ export function OrganizationSchema() {
     url: "https://www.1775gaming.com",
     logo: "https://www.1775gaming.com/images/Logo.png",
     description:
-      "Veteran-owned independent mobile game studio specializing in AI-powered gaming, augmented reality, and health integration.",
+      "Disabled Veteran-owned independent mobile game studio specializing in AI-powered gaming, augmented reality, and health integration.",
     founder: {
       "@type": "Person",
       name: "Darin Oehlke",

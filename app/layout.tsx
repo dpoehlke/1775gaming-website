@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | 1775 Gaming",
   },
   description:
-    "Experience the future of mobile gaming. Omniverse: Ascension is an AI-powered mobile RPG with augmented reality combat, real-world health integration, and an AI Game Master. Veteran owned and operated.",
+    "Experience the future of mobile gaming. Omniverse: Ascension is an AI-powered mobile RPG with augmented reality combat, real-world health integration, and an AI Game Master. Disabled Veteran owned and operated.",
   keywords: [
     "mobile RPG",
     "AI game master",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     "fitness RPG",
     "AI powered gaming",
     "1775 Gaming",
-    "veteran owned game studio",
+    "disabled veteran owned game studio",
     "TTRPG mobile",
     "indie mobile game",
     "superhero mobile game",

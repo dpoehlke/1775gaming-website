@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Veteran owned and operated. 1775 Gaming LLC was founded by a United States Marine with a vision to revolutionize mobile gaming through AI, augmented reality, and real-world health integration.",
+    "Veteran owned and operated. 1775 Gaming LLC was founded by a United States Marine and Disabled Veteran with a vision to revolutionize mobile gaming through AI, augmented reality, and real-world health integration.",
 };
 
 function ValueCard({
@@ -45,8 +45,8 @@ export default function AboutPage() {
             ABOUT 1775 GAMING
           </h1>
           <p className="font-body text-silver/70 text-lg leading-relaxed">
-            Veteran Owned and Operated. Built by a Marine, a lifelong gamer,
-            and a dreamer who refused to wait for permission.
+            Veteran Owned and Operated. Built by a Marine and Disabled Veteran,
+            a lifelong gamer, and a dreamer who refused to wait for permission.
           </p>
         </div>
       </section>
@@ -68,7 +68,7 @@ export default function AboutPage() {
           </p>
           <p className="font-body text-silver/60 text-sm max-w-xl">
             1775 Gaming LLC is proud to be founded and operated by a United
-            States Marine veteran
+            States Marine and Disabled Veteran
           </p>
         </div>
       </section>
@@ -182,7 +182,7 @@ export default function AboutPage() {
               Darin Oehlke
             </h3>
             <p className="font-body text-gold text-xs uppercase tracking-widest mb-2">
-              Founder, Lead Developer &amp; United States Marine (Ret.)
+              Founder, Lead Developer &amp; United States Marine, Disabled Veteran
             </p>
             {/* Semper Fi badge */}
             <div className="inline-block border border-gold/40 bg-gold/10 px-4 py-1.5 mb-6">
