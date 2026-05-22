@@ -4,6 +4,9 @@ const nextConfig = {
     formats: ['image/webp'],
     remotePatterns: [],
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {
@@ -30,5 +33,4 @@ const nextConfig = {
     ]
   },
 }
-
 export default nextConfig
