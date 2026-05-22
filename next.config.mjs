@@ -7,9 +7,6 @@ const nextConfig = {
     formats: ['image/webp'],
     remotePatterns: [],
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   async headers() {
     return [
       {
