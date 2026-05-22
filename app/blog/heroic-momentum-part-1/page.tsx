@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BlogPostSchema } from ".../components/StructuredData";
+import { BlogPostSchema } from "../../components/StructuredData";
 
 export const metadata: Metadata = {
   title: "Heroic Momentum Part 1: Leveling Up In Real Life",
