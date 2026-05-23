@@ -222,7 +222,7 @@ function InlineNewsletter() {
 // Small blog card
 function BlogCard({ post }: { post: Post }) {
   return (
-    <article className="group flex flex-col bg-charcoal border border-white/5 hover:border-white/15 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <Link href={`/blog/${post.slug}`} className="block group flex flex-col bg-charcoal border border-white/5 hover:border-white/15 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
       {/* Gradient header strip */}
       <div
         className={`h-28 bg-gradient-to-br ${post.gradient} flex-shrink-0`}
@@ -251,7 +251,7 @@ function BlogCard({ post }: { post: Post }) {
           </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
 
