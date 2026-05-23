@@ -1,26 +1,27 @@
 /**
  * /admin — SuperAdmin Command Center dashboard.
- * Server Component: session already verified by middleware.
+ * Server Component. Auth is enforced by middleware — no session check needed here.
  */
-import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { redirect } from 'next/navigation'
+import { createClient } from '@supabase/supabase-js'
+
+// Service-role client for reading protected tables
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
+)
 
 export default async function AdminDashboard() {
-  const supabase = createSupabaseServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  if (!session) redirect('/admin/login')
-
-  // Live stats — errors return 0 rather than crashing
+  // Live stats — errors default to 0
   const [betaRes, newsletterRes, routeRes] = await Promise.all([
-    supabase.from('beta_signups').select('*', { count: 'exact', head: true }),
-    supabase.from('newsletter_subscribers').select('*', { count: 'exact', head: true }),
-    supabase.from('mission_routes').select('*', { count: 'exact', head: true }),
+    supabaseAdmin.from('beta_signups').select('*', { count: 'exact', head: true }),
+    supabaseAdmin.from('newsletter_subscribers').select('*', { count: 'exact', head: true }),
+    supabaseAdmin.from('mission_routes').select('*', { count: 'exact', head: true }),
   ])
 
   const stats = [
-    { label: 'BETA PIONEERS',   value: betaRes.count       ?? 0, color: '#CC0000', href: '/admin/beta-signups' },
-    { label: 'NEWSLETTER',      value: newsletterRes.count  ?? 0, color: '#B8860B', href: '/admin/newsletter'   },
-    { label: 'MISSION ROUTES',  value: routeRes.count       ?? 0, color: '#00D4FF', href: '/admin/gpx'          },
+    { label: 'BETA PIONEERS',  value: betaRes.count       ?? 0, color: '#CC0000', href: '/admin/beta-signups' },
+    { label: 'NEWSLETTER',     value: newsletterRes.count  ?? 0, color: '#B8860B', href: '/admin/newsletter'   },
+    { label: 'MISSION ROUTES', value: routeRes.count       ?? 0, color: '#00D4FF', href: '/admin/gpx'          },
   ]
 
   const actions = [
@@ -45,9 +46,9 @@ export default async function AdminDashboard() {
             COMMAND CENTER
           </span>
         </div>
-        <div style={{ color: '#C0C0C0', fontSize: '13px' }}>
-          SuperAdmin: {session.user.email}
-        </div>
+        <a href="/admin/signout" style={{ color: '#666', fontSize: '13px', textDecoration: 'none' }}>
+          Sign out
+        </a>
       </div>
 
       <div style={{ padding: '40px' }}>
@@ -59,19 +60,11 @@ export default async function AdminDashboard() {
         {/* Stats grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '48px' }}>
           {stats.map((stat) => (
-            <a
-              key={stat.label}
-              href={stat.href}
-              style={{
-                background: '#1A1A1A',
-                border: '1px solid #333',
-                borderTop: `3px solid ${stat.color}`,
-                borderRadius: '8px',
-                padding: '32px',
-                textDecoration: 'none',
-                display: 'block',
-              }}
-            >
+            <a key={stat.label} href={stat.href} style={{
+              background: '#1A1A1A', border: '1px solid #333',
+              borderTop: `3px solid ${stat.color}`, borderRadius: '8px',
+              padding: '32px', textDecoration: 'none', display: 'block',
+            }}>
               <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '64px', color: stat.color, lineHeight: 1 }}>
                 {stat.value}
               </div>
@@ -88,22 +81,12 @@ export default async function AdminDashboard() {
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', maxWidth: '600px' }}>
           {actions.map((action) => (
-            <a
-              key={action.label}
-              href={action.href}
-              style={{
-                background: action.bg,
-                color: 'white',
-                padding: '16px 24px',
-                borderRadius: '4px',
-                textDecoration: 'none',
-                fontFamily: 'Bebas Neue, sans-serif',
-                fontSize: '16px',
-                letterSpacing: '0.1em',
-                textAlign: 'center',
-                display: 'block',
-              }}
-            >
+            <a key={action.label} href={action.href} style={{
+              background: action.bg, color: 'white', padding: '16px 24px',
+              borderRadius: '4px', textDecoration: 'none',
+              fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px',
+              letterSpacing: '0.1em', textAlign: 'center', display: 'block',
+            }}>
               {action.label}
             </a>
           ))}

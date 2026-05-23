@@ -1,15 +1,12 @@
 /**
  * Next.js middleware — SuperAdmin-only /admin/* gate.
  *
- * Any request to /admin/* that is NOT the SuperAdmin
- * is redirected to /admin/login (unauthenticated) or
- * to / (wrong account) with no explanation.
+ * Checks a signed httpOnly cookie (set by POST /api/admin/auth).
+ * No Supabase session is involved — pure username/password auth.
  */
-import { createServerClient } from '@supabase/ssr'
+import { verifySession, ADMIN_COOKIE } from '@/lib/admin-auth'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-
-const SUPERADMIN_UID = 'a4e1c087-2f83-4f94-9ec6-113121c744a1'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -20,48 +17,17 @@ export async function middleware(request: NextRequest) {
   // Pass-through: login page itself (avoid redirect loop)
   if (pathname === '/admin/login') return NextResponse.next()
 
-  // Build a response object so @supabase/ssr can refresh session cookies
-  const response = NextResponse.next({
-    request: { headers: request.headers },
-  })
+  const secret = process.env.ADMIN_SESSION_SECRET ?? ''
+  const token  = request.cookies.get(ADMIN_COOKIE)?.value
+  const valid  = await verifySession(token, secret)
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
-        },
-        set(name: string, value: string, options: Record<string, unknown>) {
-          response.cookies.set(name, value, options as Parameters<typeof response.cookies.set>[2])
-        },
-        remove(name: string, options: Record<string, unknown>) {
-          response.cookies.set(name, '', options as Parameters<typeof response.cookies.set>[2])
-        },
-      },
-    }
-  )
-
-  const { data: { session } } = await supabase.auth.getSession()
-
-  // No session — redirect to login, preserving the intended destination
-  if (!session) {
-    const loginUrl = new URL('/admin/login', request.url)
-    loginUrl.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(loginUrl)
+  if (!valid) {
+    const url = new URL('/admin/login', request.url)
+    url.searchParams.set('redirect', pathname)
+    return NextResponse.redirect(url)
   }
 
-  // Authenticated but NOT the SuperAdmin — silent redirect to homepage
-  if (session.user.id !== SUPERADMIN_UID) {
-    console.warn(
-      `[security] Unauthorized admin access: ${session.user.email} (${session.user.id}) → ${pathname}`
-    )
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  // SuperAdmin confirmed — pass through with refreshed session cookies
-  return response
+  return NextResponse.next()
 }
 
 export const config = {

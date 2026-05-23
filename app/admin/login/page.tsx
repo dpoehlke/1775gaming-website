@@ -1,14 +1,26 @@
 'use client'
 import { useState, useEffect, Suspense } from 'react'
-import { createClient } from '@supabase/supabase-js'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const INPUT_STYLE: React.CSSProperties = {
+  width:        '100%',
+  background:   '#0D0D0D',
+  border:       '1px solid #333',
+  borderRadius: '4px',
+  color:        'white',
+  padding:      '12px',
+  fontSize:     '14px',
+  outline:      'none',
+  boxSizing:    'border-box',
+}
 
-const SUPERADMIN_UID = 'a4e1c087-2f83-4f94-9ec6-113121c744a1'
+const LABEL_STYLE: React.CSSProperties = {
+  display:       'block',
+  color:         '#B8860B',
+  fontSize:      '11px',
+  letterSpacing: '0.15em',
+  marginBottom:  '8px',
+}
 
 // ── Inner form (needs useSearchParams — must be in Suspense) ──────────────────
 
@@ -17,85 +29,133 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const redirectTo   = searchParams.get('redirect') || '/admin'
 
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
   const [status,   setStatus]   = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [attempts, setAttempts] = useState(0)
+  const [locked,   setLocked]   = useState(false)
+  const [lockSecs, setLockSecs] = useState(0)
 
-  // Already logged in as SuperAdmin? Skip the login page.
+  // Lockout countdown
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user.id === SUPERADMIN_UID) router.push(redirectTo)
-    })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    if (lockSecs <= 0) { if (locked) setLocked(false); return }
+    const t = setTimeout(() => setLockSecs((s) => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [lockSecs, locked])
 
-  const handleGoogleLogin = async () => {
+  const handleLogin = async () => {
+    if (locked || status === 'loading') return
+
+    if (attempts >= 5) {
+      setLocked(true)
+      setLockSecs(300)
+      setErrorMsg('Too many attempts. Locked for 5 minutes.')
+      return
+    }
+
     setStatus('loading')
     setErrorMsg('')
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
-      options: {
-        // Pass the intended destination so the callback can redirect correctly
-        redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
-      },
-    })
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username, password }),
+      })
 
-    if (error) {
+      if (res.ok) {
+        router.push(redirectTo)
+        router.refresh()
+      } else {
+        setAttempts((a) => a + 1)
+        setStatus('error')
+        setErrorMsg(`Invalid credentials. Attempt ${attempts + 1} of 5.`)
+      }
+    } catch {
+      setAttempts((a) => a + 1)
       setStatus('error')
-      setErrorMsg('Could not start Google sign-in. Please try again.')
+      setErrorMsg('Network error. Please try again.')
     }
-    // On success the browser navigates away to Google — no further action needed here
+  }
+
+  const onKey = (e: React.KeyboardEvent) => { if (e.key === 'Enter') handleLogin() }
+
+  if (locked) {
+    return (
+      <div style={{ textAlign: 'center', color: '#CC0000', padding: '20px' }}>
+        <div style={{ fontSize: '52px' }}>🔒</div>
+        <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', marginTop: '12px' }}>
+          ACCESS LOCKED
+        </div>
+        <div style={{ color: '#C0C0C0', marginTop: '8px' }}>
+          Try again in {Math.floor(lockSecs / 60)}:{String(lockSecs % 60).padStart(2, '0')}
+        </div>
+      </div>
+    )
   }
 
   return (
     <>
-      <button
-        onClick={handleGoogleLogin}
-        disabled={status === 'loading'}
-        style={{
-          width:          '100%',
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'center',
-          gap:            '12px',
-          background:     status === 'loading' ? '#222' : '#24292e',
-          color:          '#fff',
-          border:         '2px solid #B8860B',
-          borderRadius:   '4px',
-          padding:        '14px 20px',
-          fontFamily:     'IBM Plex Sans, sans-serif',
-          fontSize:       '15px',
-          fontWeight:     600,
-          letterSpacing:  '0.02em',
-          cursor:         status === 'loading' ? 'not-allowed' : 'pointer',
-          opacity:        status === 'loading' ? 0.6 : 1,
-          transition:     'opacity 0.2s, background 0.2s',
-        }}
-      >
-        {/* GitHub mark */}
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-        </svg>
-        {status === 'loading' ? 'Redirecting to GitHub…' : 'Sign in with GitHub'}
-      </button>
+      <div style={{ marginBottom: '20px' }}>
+        <label style={LABEL_STYLE}>USERNAME</label>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          onKeyDown={onKey}
+          autoComplete="username"
+          autoFocus
+          style={INPUT_STYLE}
+        />
+      </div>
+
+      <div style={{ marginBottom: '28px' }}>
+        <label style={LABEL_STYLE}>PASSWORD</label>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={onKey}
+          autoComplete="current-password"
+          style={INPUT_STYLE}
+        />
+      </div>
 
       {errorMsg && (
         <div style={{
-          marginTop:    '16px',
           background:   '#2E0D0D',
           border:       '1px solid #CC0000',
           borderRadius: '4px',
           padding:      '12px',
           color:        '#CC0000',
           fontSize:     '13px',
+          marginBottom: '20px',
           textAlign:    'center',
         }}>
           {errorMsg}
         </div>
       )}
 
-      <p style={{ color: '#555', fontSize: '12px', textAlign: 'center', marginTop: '20px', lineHeight: 1.5 }}>
-        Only the authorized administrator account<br/>can access this area.
-      </p>
+      <button
+        onClick={handleLogin}
+        disabled={status === 'loading' || !username || !password}
+        style={{
+          width:         '100%',
+          background:    status === 'loading' ? '#333' : '#CC0000',
+          color:         'white',
+          border:        '2px solid #B8860B',
+          borderRadius:  '4px',
+          padding:       '14px',
+          fontFamily:    'Bebas Neue, sans-serif',
+          fontSize:      '18px',
+          letterSpacing: '0.1em',
+          cursor:        status === 'loading' || !username || !password ? 'not-allowed' : 'pointer',
+          opacity:       !username || !password ? 0.6 : 1,
+        }}
+      >
+        {status === 'loading' ? 'AUTHENTICATING…' : 'ENTER COMMAND CENTER'}
+      </button>
     </>
   )
 }
@@ -105,12 +165,12 @@ function LoginForm() {
 export default function AdminLoginPage() {
   return (
     <div style={{
-      background:      '#0D0D0D',
-      minHeight:       '100vh',
-      display:         'flex',
-      alignItems:      'center',
-      justifyContent:  'center',
-      fontFamily:      'IBM Plex Sans, sans-serif',
+      background:     '#0D0D0D',
+      minHeight:      '100vh',
+      display:        'flex',
+      alignItems:     'center',
+      justifyContent: 'center',
+      fontFamily:     'IBM Plex Sans, sans-serif',
     }}>
       <div style={{
         background:   '#1A1A1A',
