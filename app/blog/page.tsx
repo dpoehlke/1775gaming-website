@@ -95,6 +95,17 @@ const POSTS: Post[] = [
     gradient: "from-rose-700/25 via-rose-700/8 to-transparent",
     accentColor: "text-rose-400",
   },
+  {
+    slug: "heroic-momentum-part-1",
+    category: "HEALTH GAMING",
+    date: "May 22, 2026",
+    readTime: "5 min read",
+    title: "Heroic Momentum Part 1: Leveling Up In Real Life",
+    excerpt:
+      "Inspired by Solo Leveling, we built a system where your character's power reflects your real-world effort. Heroic Momentum ties in-game rewards to real-life activity — power up your character as you pump yourself up.",
+    gradient: "from-emerald-700/25 via-emerald-700/8 to-transparent",
+    accentColor: "text-emerald-400",
+  },
 ];
 
 // Newsletter component (inline, between grid rows)
