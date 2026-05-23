@@ -46,9 +46,9 @@ export default function HeroicMomentumPart1() {
 
       <BlogPostSchema
         title="Heroic Momentum Part 1: Leveling Up In Real Life"
-        description={metadata.description}
-        datePublished="2026-05-22"
-        author="1775 Gaming"
+        description={metadata.description ?? ""}
+        publishedDate="2026-05-22"
+        slug="heroic-momentum-part-1"
       />
 
       <section className="prose prose-invert max-w-none mb-8">
