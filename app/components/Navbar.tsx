@@ -42,7 +42,7 @@ export default function Navbar() {
               </span>
             ) : (
               <Image
-                src="/images/Logo.png"
+                src="/images/Logo_no_ega.png"
                 alt="1775 Gaming"
                 width={200}
                 height={60}

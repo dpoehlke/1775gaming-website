@@ -4,7 +4,7 @@ export function OrganizationSchema() {
     "@type": "Organization",
     name: "1775 Gaming LLC",
     url: "https://www.1775gaming.com",
-    logo: "https://www.1775gaming.com/images/Logo.png",
+    logo: "https://www.1775gaming.com/images/Logo_no_ega.png",
     description:
       "Disabled Veteran-owned independent mobile game studio specializing in AI-powered gaming, augmented reality, and health integration.",
     founder: {
@@ -102,7 +102,7 @@ export function BlogPostSchema({
       name: "1775 Gaming LLC",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.1775gaming.com/images/Logo.png",
+        url: "https://www.1775gaming.com/images/Logo_no_ega.png",
       },
     },
     url: `https://www.1775gaming.com/blog/${slug}`,
