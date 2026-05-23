@@ -25,6 +25,7 @@ interface Post {
   gradient: string;
   accentColor: string;
   featured?: boolean;
+  published?: boolean;
 }
 
 const POSTS: Post[] = [
@@ -39,6 +40,7 @@ const POSTS: Post[] = [
     gradient: "from-scarlet/30 via-scarlet/10 to-transparent",
     accentColor: "text-scarlet",
     featured: true,
+    published: true,
   },
   {
     slug: "ar-combat-system",
@@ -105,6 +107,7 @@ const POSTS: Post[] = [
       "Inspired by Solo Leveling, we built a system where your character's power reflects your real-world effort. Heroic Momentum ties in-game rewards to real-life activity — power up your character as you pump yourself up.",
     gradient: "from-emerald-700/25 via-emerald-700/8 to-transparent",
     accentColor: "text-emerald-400",
+    published: true,
   },
 ];
 
@@ -221,8 +224,8 @@ function InlineNewsletter() {
 
 // Small blog card
 function BlogCard({ post }: { post: Post }) {
-  return (
-    <Link href={`/blog/${post.slug}`} className="block group flex flex-col bg-charcoal border border-white/5 hover:border-white/15 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+  const inner = (
+    <>
       {/* Gradient header strip */}
       <div
         className={`h-28 bg-gradient-to-br ${post.gradient} flex-shrink-0`}
@@ -246,12 +249,26 @@ function BlogCard({ post }: { post: Post }) {
         </p>
         <div className="flex items-center justify-between pt-2 border-t border-white/5 mt-auto">
           <span className="font-body text-xs text-silver/35">{post.date}</span>
-          <span className="font-body text-xs font-semibold text-scarlet uppercase tracking-wider">
-            Read More →
+          <span className={`font-body text-xs font-semibold uppercase tracking-wider ${post.published ? "text-scarlet" : "text-silver/30"}`}>
+            {post.published ? "Read More →" : "Coming Soon"}
           </span>
         </div>
       </div>
-    </Link>
+    </>
+  );
+
+  if (post.published) {
+    return (
+      <Link href={`/blog/${post.slug}`} className="group flex flex-col bg-charcoal border border-white/5 hover:border-white/15 transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <article className="group flex flex-col bg-charcoal border border-white/5 overflow-hidden opacity-75">
+      {inner}
+    </article>
   );
 }
 
@@ -301,7 +318,7 @@ export default function BlogPage() {
             <p className="font-body text-xs text-gold tracking-[0.45em] uppercase mb-8">
               Featured Article
             </p>
-            <article className="group grid grid-cols-1 lg:grid-cols-2 gap-0 border border-white/8 hover:border-scarlet/30 transition-all duration-300 overflow-hidden">
+            <Link href={`/blog/${featured.slug}`} className="group grid grid-cols-1 lg:grid-cols-2 gap-0 border border-white/8 hover:border-scarlet/30 transition-all duration-300 overflow-hidden">
               {/* Left: gradient visual */}
               <div
                 className={`relative min-h-[280px] lg:min-h-0 bg-gradient-to-br ${featured.gradient} flex items-end p-8`}
@@ -335,15 +352,12 @@ export default function BlogPage() {
                   <span className="font-body text-xs text-silver/35">
                     {featured.readTime}
                   </span>
-                  <Link
-                    href={`/blog/${featured.slug}`}
-                    className="font-body text-sm font-semibold text-scarlet uppercase tracking-wider hover:text-scarlet/75 transition-colors"
-                  >
+                  <span className="font-body text-sm font-semibold text-scarlet uppercase tracking-wider">
                     Read Article →
-                  </Link>
+                  </span>
                 </div>
               </div>
-            </article>
+            </Link>
           </div>
         </section>
       )}
