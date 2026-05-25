@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://www.1775gaming.com/about</loc><lastmod>2026-05-20T00:40:10.364Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/beta</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/blog/ai-game-master-coming-to-mobile</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/terms</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/games</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/privacy</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com/blog</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-<url><loc>https://www.1775gaming.com</loc><lastmod>2026-05-20T00:40:10.365Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/blog</loc><lastmod>2026-05-20T03:38:56.524Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/about</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/blog/ai-game-master-coming-to-mobile</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/beta</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/games</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/privacy</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/terms</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+<url><loc>https://www.1775gaming.com/admin/gpx</loc><lastmod>2026-05-20T03:38:56.525Z</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset>
