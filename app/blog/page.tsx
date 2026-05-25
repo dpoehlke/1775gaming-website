@@ -52,6 +52,7 @@ const POSTS: Post[] = [
       "How we're using ARKit and ARCore to place supervillain battles in your living room — and the engineering challenges we had to solve to make it feel real.",
     gradient: "from-blue-700/25 via-blue-700/8 to-transparent",
     accentColor: "text-blue-400",
+    published: true,
   },
   {
     slug: "health-data-powers-heroes",
