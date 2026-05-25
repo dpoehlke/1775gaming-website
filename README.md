@@ -47,12 +47,20 @@ app/
   layout.tsx         # Root layout (fonts, nav, footer)
   page.tsx           # Homepage hero
 public/
-  images/            # Drop logo.png here
+  images/            # Logo + game artwork (PNG)
 ```
 
-## Logo
+## Logo & artwork
 
-Drop your `logo.png` file into `public/images/logo.png`. Until then, the navbar shows a text fallback "1775 GAMING".
+Logo and game artwork live in `public/images/`. Active files:
+
+- `Logo_no_ega.png` — primary company logo (used in Navbar, Footer, and Schema.org structured data)
+- `Omniverse-Logo.png` — Omniverse: Ascension wordmark (used on /games OG image and hero)
+- `Omniverse-Badge.png` — Omniverse: Ascension badge (used on homepage feature section and /games)
+
+Filenames are case-sensitive on Vercel (Linux). If you replace a file, keep the exact same casing or update the reference in the code.
+
+If the logo image fails to load, the Navbar and Footer fall back to a text-only "1775 GAMING" wordmark.
 
 ## Environment Variables
 

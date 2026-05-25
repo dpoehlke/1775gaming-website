@@ -15,7 +15,7 @@ function BadgeImage() {
         <div className="text-center p-8">
           <p className="font-heading text-5xl text-gold/30 tracking-wider">OMNIVERSE</p>
           <p className="font-body text-xs text-silver/30 mt-3 uppercase tracking-widest">
-            Drop omniverse-badge.png in public/images/
+            Drop Omniverse-Badge.png in public/images/
           </p>
         </div>
       </div>

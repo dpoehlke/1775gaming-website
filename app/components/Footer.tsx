@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const footerLinks = [
@@ -54,11 +55,15 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
 
           {/* Left: Logo / Brand */}
-          <div className="flex-shrink-0">
-            <span className="font-heading text-3xl text-white tracking-widest">
-              1775 GAMING
-            </span>
-          </div>
+          <Link href="/" className="flex-shrink-0" aria-label="1775 Gaming home">
+            <Image
+              src="/images/Logo_no_ega.png"
+              alt="1775 Gaming"
+              width={200}
+              height={60}
+              className="h-10 w-auto"
+            />
+          </Link>
 
           {/* Center: Nav Links */}
           <nav className="flex flex-wrap justify-center gap-x-8 gap-y-2">
