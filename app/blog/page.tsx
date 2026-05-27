@@ -110,6 +110,18 @@ const POSTS: Post[] = [
     accentColor: "text-emerald-400",
     published: true,
   },
+  {
+    slug: "loathing-ads-games",
+    category: "GAME DEV",
+    date: "May 23, 2026",
+    readTime: "5 min read",
+    title: "The Tyranny of Ads: Why Mobile Games Should Go Ad-Free",
+    excerpt:
+      "You're three seconds into a gaming session, five minutes before your next meeting — and a 30-second ad erupts. A manifesto on why ad-supported games are contemptible, and how to do better.",
+    gradient: "from-rose-700/25 via-rose-700/8 to-transparent",
+    accentColor: "text-rose-400",
+    published: true,
+  },
 ];
 
 // Newsletter component (inline, between grid rows)

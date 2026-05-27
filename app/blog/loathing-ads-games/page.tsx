@@ -1,199 +1,318 @@
-import type { Metadata } from 'next';
+import Link from "next/link";
+import type { Metadata } from "next";
+import { BlogPostSchema } from "../../components/StructuredData";
 
 export const metadata: Metadata = {
-  title: 'The Tyranny of Ads: Why Games Should Go Ad-Free | 1775 Gaming',
-  description: 'A passionate manifesto on why mobile games and all games should eliminate ads and monetize through integrity instead.',
+  title: "The Tyranny of Ads: Why Games Should Go Ad-Free",
+  description:
+    "A passionate manifesto on why mobile games and all games should eliminate ads and monetize through integrity instead.",
   openGraph: {
-    title: 'The Tyranny of Ads: Why Games Should Go Ad-Free',
-    description: 'Why forced game ads are contemptible and how developers can monetize better.',
-    type: 'article',
+    type: "article",
+    publishedTime: "2026-05-23T00:00:00Z",
+    authors: ["1775 Gaming"],
   },
 };
 
+const TAGS = [
+  "#AdFreeGaming",
+  "#MobileGaming",
+  "#GameDev",
+  "#Monetization",
+  "#PlayerFirst",
+];
+
 export default function LoathingAdsGames() {
   return (
-    <article className="prose prose-lg max-w-3xl mx-auto px-4 py-12">
-      <h1>The Tyranny of Ads: Why Mobile Games (and All Games) Should Go Ad-Free</h1>
+    <div className="bg-marine-black min-h-screen">
+      <BlogPostSchema
+        title="The Tyranny of Ads: Why Mobile Games Should Go Ad-Free"
+        description={metadata.description ?? ""}
+        publishedDate="2026-05-23"
+        slug="loathing-ads-games"
+      />
 
-      <p>
-        You're three seconds into a gaming session. You've got five minutes before your next meeting. You load up the game you actually want to play—the one you've been waiting to get back to. But before you can even tap the screen, a full-screen ad erupts.
-      </p>
+      {/* ─── HERO ─── */}
+      <section className="relative py-24 px-4 border-b border-white/8 overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(190,18,60,0.10) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 font-body text-xs text-silver/45 uppercase tracking-widest hover:text-gold transition-colors mb-10"
+          >
+            ← Back to The Briefing
+          </Link>
 
-      <p>
-        It's for some other game. Some hyper-casual puzzle game with shitty graphics and a title you'll forget before the ad ends. You watch helplessly as a 30-second countdown timer mocks you. 15 seconds left. 10. 5. Finally, it's gone.
-      </p>
+          <div className="flex items-center gap-4 mb-6">
+            <span className="inline-block bg-rose-700 px-3 py-1 font-body text-[10px] font-bold uppercase tracking-widest text-white">
+              Game Dev
+            </span>
+            <span className="font-body text-silver/35 text-xs uppercase tracking-wider">
+              May 23, 2026 &nbsp;·&nbsp; 5 min read
+            </span>
+          </div>
 
-      <p>
-        You've now spent 25% of your gaming session watching an ad for a game you will never, ever play.
-      </p>
+          <h1 className="font-heading text-4xl lg:text-6xl text-white tracking-wide leading-tight mb-5">
+            THE TYRANNY OF ADS: WHY MOBILE GAMES SHOULD GO AD-FREE
+          </h1>
 
-      <p>
-        <em>This is the absurdity of ad-supported games.</em>
-      </p>
+          <p className="font-body text-gold text-base italic">
+            A manifesto on contempt, attention, and monetizing with integrity.
+          </p>
+        </div>
+      </section>
 
-      <h2>The Insult at the Core</h2>
+      {/* ─── ARTICLE BODY ─── */}
+      <article className="max-w-3xl mx-auto px-4 py-16 space-y-12">
 
-      <p>
-        Here's what really gets me: the fundamental betrayal of it all. You <em>chose</em> to play <em>this</em> game. You downloaded it. You opened it. You want to <em>play it</em>. And the first thing the game does is punish you by forcing you to watch an ad for a <em>different</em> game.
-      </p>
+        {/* Intro */}
+        <div className="space-y-5">
+          <p className="font-body text-silver/80 text-lg leading-relaxed">
+            You&apos;re three seconds into a gaming session. You&apos;ve got
+            five minutes before your next meeting. You load up the game you
+            actually want to play — the one you&apos;ve been waiting to get
+            back to. But before you can even tap the screen, a full-screen ad
+            erupts.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            It&apos;s for some other game. Some hyper-casual puzzle game with
+            shitty graphics and a title you&apos;ll forget before the ad ends.
+            You watch helplessly as a 30-second countdown timer mocks you. 15
+            seconds left. 10. 5. Finally, it&apos;s gone.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            You&apos;ve now spent 25% of your gaming session watching an ad for
+            a game you will never, ever play.
+          </p>
+          <p className="font-heading text-2xl text-rose-400 tracking-wide">
+            This is the absurdity of ad-supported games.
+          </p>
+        </div>
 
-      <p>
-        It's like buying a pizza and being forced to watch a commercial for burgers before you can take a bite.
-      </p>
+        <div className="border-t border-white/8" />
 
-      <p>
-        The worst part? The ads are for games you're never going to play. They're targeting you with games that don't match your interests, your skill level, or your taste. They're generic, low-effort knockoffs churned out by studios that understand one thing: how to farm ad revenue.
-      </p>
+        {/* Section 1 */}
+        <div className="space-y-5">
+          <h2 className="font-heading text-3xl text-white tracking-wide">
+            THE INSULT AT THE CORE
+          </h2>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            Here&apos;s what really gets me: the fundamental betrayal of it
+            all. You <em>chose</em> to play <em>this</em> game. You downloaded
+            it. You opened it. You want to <em>play it</em>. And the first
+            thing the game does is punish you by forcing you to watch an ad for
+            a <em>different</em> game.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            It&apos;s like buying a pizza and being forced to watch a
+            commercial for burgers before you can take a bite.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            The worst part? The ads are for games you&apos;re never going to
+            play. They&apos;re targeting you with games that don&apos;t match
+            your interests, your skill level, or your taste. They&apos;re
+            generic, low-effort knockoffs churned out by studios that
+            understand one thing: how to farm ad revenue.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            And we&apos;ve all accepted this. We&apos;ve normalized it. We sit
+            there and wait. We watch the countdown. We tap &ldquo;close&rdquo;
+            when the timer finally lets us. We&apos;ve been trained like
+            Pavlov&apos;s dogs to just... accept it.
+          </p>
+          <p className="font-heading text-2xl text-scarlet tracking-wide">
+            But why?
+          </p>
+        </div>
 
-      <p>
-        And we've all accepted this. We've normalized it. We sit there and wait. We watch the countdown. We tap "close" when the timer finally lets us. We've been trained like Pavlov's dogs to just... accept it.
-      </p>
+        <div className="border-t border-white/8" />
 
-      <p>
-        But why?
-      </p>
+        {/* Section 2 */}
+        <div className="space-y-5">
+          <h2 className="font-heading text-3xl text-white tracking-wide">
+            THE ECONOMICS OF CONTEMPT
+          </h2>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            The answer is money, of course. Ad networks will pay developers for
+            impressions. Every time you watch an ad — even if you&apos;re
+            seething with rage — that&apos;s a dollar sign. Multiply that by
+            millions of players, and suddenly, a game that costs $0.99 (or is
+            &ldquo;free&rdquo;) becomes a revenue machine.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            The catch? That revenue is built on contempt.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            Free-to-play games have become hostage situations. The game is
+            free, which sounds great — until you realize you&apos;re not the
+            customer. You&apos;re the product. Your attention is being
+            harvested and sold to the highest bidder. Every ad is a transaction
+            where your time becomes someone else&apos;s profit.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            And the worst part is that this model <em>works</em>. It&apos;s so
+            effective at extracting money that it&apos;s become the default for
+            indie developers and massive studios alike. Because if they leave,
+            there are a million other players willing to tolerate the ads.
+          </p>
+        </div>
 
-      <h2>The Economics of Contempt</h2>
+        <div className="border-t border-white/8" />
 
-      <p>
-        The answer is money, of course. Ad networks will pay developers for impressions. Every time you watch an ad—even if you're seething with rage—that's a dollar sign. Multiply that by millions of players, and suddenly, a game that costs $0.99 (or is "free") becomes a revenue machine.
-      </p>
+        {/* Section 3 */}
+        <div className="space-y-5">
+          <h2 className="font-heading text-3xl text-white tracking-wide">
+            THE DEVELOPER&apos;S DILEMMA — AND THE WAY OUT
+          </h2>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            I get it. I&apos;m a game developer too. I know the pressure to
+            monetize. Servers cost money. Development takes time. If
+            you&apos;re not charging an upfront price, you need <em>some</em>{" "}
+            way to fund your work.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            But there are other options. In-app purchases for cosmetics.
+            Premium tiers that unlock extra features. Battle passes that reward
+            engaged players. Even a one-time &ldquo;remove ads&rdquo; purchase
+            for $2.99 that lets players vote with their wallet.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            The irony? Players are <em>willing</em> to pay. They just
+            don&apos;t want to be waterboarded by ads for games they
+            don&apos;t want. A paid game with no ads? I&apos;ll buy it. A free
+            game with cosmetic purchases and no ads? I&apos;ll spend money on
+            it. A free game where ads are <em>optional</em> — where I choose
+            to watch one to get a reward? That respects my time.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            But a free game that ambushes me with ads every five seconds?
+            That&apos;s not monetization.{" "}
+            <span className="text-gold font-semibold">
+              That&apos;s extortion dressed up as a business model.
+            </span>
+          </p>
+        </div>
 
-      <p>
-        The catch? That revenue is built on contempt.
-      </p>
+        <div className="border-t border-white/8" />
 
-      <p>
-        Free-to-play games have become hostage situations. The game is free, which sounds great—until you realize you're not the customer. You're the product. Your attention is being harvested and sold to the highest bidder. Every ad is a transaction where your time becomes someone else's profit.
-      </p>
+        {/* Section 4 */}
+        <div className="space-y-5">
+          <h2 className="font-heading text-3xl text-white tracking-wide">
+            WHAT &ldquo;AD-FREE&rdquo; REALLY MEANS
+          </h2>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            I&apos;m not talking about banning ads from the internet.
+            I&apos;m not a purist. But in games — in{" "}
+            <em>
+              interactive entertainment that requires your full attention and
+              participation
+            </em>{" "}
+            — ads are fundamentally incompatible with the experience.
+          </p>
+          <ul className="space-y-3 pt-1">
+            {[
+              "No forced video ads before, during, or after gameplay",
+              "No banner ads cluttering the UI",
+              "No pop-up ads interrupting your flow",
+              "No ads masquerading as tutorials you're forced to watch",
+              "No ads as 'rewards' where you trade your time for something you should get for just playing",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <span className="text-rose-400 font-bold flex-shrink-0 mt-0.5">✗</span>
+                <span className="font-body text-silver/75 text-base leading-relaxed">
+                  {item}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            It means respecting the player&apos;s time and attention as a
+            finite resource that deserves protection.
+          </p>
+        </div>
 
-      <p>
-        And the worst part is that this model <em>works</em>. It's so effective at extracting money that it's become the default for indie developers and massive studios alike. If you're building a mobile game and you want to monetize it, ads are the easiest path. Just dump them in, watch the revenue roll in, and don't worry about the player experience.
-      </p>
+        <div className="border-t border-white/8" />
 
-      <p>
-        Because if they leave, there are a million other players willing to tolerate the ads.
-      </p>
+        {/* Section 5 — Manifesto */}
+        <div className="space-y-5">
+          <h2 className="font-heading text-3xl text-white tracking-wide">
+            THE PATH FORWARD
+          </h2>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            Here&apos;s my manifesto:{" "}
+            <span className="text-gold font-semibold">
+              games should go ad-free.
+            </span>{" "}
+            Not all of them. Not immediately. But consciously, deliberately, as
+            a choice.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            If you&apos;re building a game, I&apos;m asking you to do
+            something radical: value your player&apos;s experience more than
+            the ad impressions they generate. Charge for it. Ask for
+            donations. Sell cosmetics. Offer battle passes. Give power users
+            premium features. Get creative. But don&apos;t treat your players
+            like billboards.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            And if you&apos;re a player? Vote with your feet. Delete games that
+            abuse your attention. Spend your money on developers who respect
+            you. Make it clear: we&apos;re done with this.
+          </p>
+          <p className="font-body text-silver/75 text-base leading-relaxed">
+            We can have better games. Games that don&apos;t punish you for
+            playing them.
+          </p>
+          <p className="font-heading text-2xl text-gold tracking-wide">
+            Games with no ads. Ever. It&apos;s time.
+          </p>
+          <p className="font-body text-silver/40 text-sm italic pt-2">
+            — 1775 Dev Team
+          </p>
+        </div>
 
-      <h2>The Developer's Dilemma (And the Way Out)</h2>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 pt-2">
+          {TAGS.map((tag) => (
+            <span
+              key={tag}
+              className="font-body text-xs text-gold border border-gold/30 bg-gold/10 px-3 py-1.5"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
 
-      <p>
-        I get it. I'm a game developer too. I know the pressure to monetize. Servers cost money. Development takes time. If you're not charging an upfront price, you need <em>some</em> way to fund your work.
-      </p>
+        {/* CTA */}
+        <div className="border border-gold/30 bg-charcoal p-8 lg:p-10 text-center space-y-4">
+          <p className="font-heading text-3xl lg:text-4xl text-white tracking-wide">
+            READY TO PLAY IT DIFFERENT?
+          </p>
+          <p className="font-body text-silver/60 text-sm">
+            Omniverse: Ascension — no ads. Ever.
+          </p>
+          <Link
+            href="/beta"
+            className="inline-block mt-2 px-8 py-3 font-body font-semibold text-sm uppercase tracking-widest text-white bg-scarlet hover:bg-scarlet/80 transition-colors duration-300"
+          >
+            Join Beta
+          </Link>
+        </div>
 
-      <p>
-        But there are other options. And every day I see more developers choosing them.
-      </p>
-
-      <p>
-        In-app purchases for cosmetics. Premium tiers that unlock extra features. Battle passes that reward engaged players. Even simple things like a one-time "remove ads" purchase for $2.99 that actually lets players vote with their wallet.
-      </p>
-
-      <p>
-        The irony? Players are <em>willing</em> to pay. They just don't want to be waterboarded by ads for games they don't want.
-      </p>
-
-      <p>
-        A paid game with no ads? I'll buy it. A free game with cosmetic purchases and no ads? I'll spend money on it. A free game where ads are actually <em>optional</em>—where I choose to watch one to get a reward, rather than being forced to watch one as punishment? That respects my time, and I appreciate it.
-      </p>
-
-      <p>
-        But a free game that ambushes me with ads every five seconds? That I'm <em>trying to enjoy</em>? That's not monetization. That's extortion dressed up as a business model.
-      </p>
-
-      <h2>The Myth of "Monetization Necessity"</h2>
-
-      <p>
-        Let's talk about the elephant in the room: the claim that ads are "necessary" to keep games free.
-      </p>
-
-      <p>
-        Are they necessary? Sure, if you want to extract maximum revenue from minimum effort. But are they the <em>only</em> way?
-      </p>
-
-      <p>
-        No.
-      </p>
-
-      <p>
-        Plenty of successful games have gone ad-free. They've done it through cosmetics, premium features, or a simple upfront purchase. Some games have even thrived by being transparent about it: "This is how we fund development. If you like the game, here's how you can help."
-      </p>
-
-      <p>
-        Players respect that. They don't respect being ambushed.
-      </p>
-
-      <p>
-        The difference is the difference between asking for support and demanding sacrifice. One builds a community. The other builds resentment.
-      </p>
-
-      <h2>What "Ad-Free" Really Means</h2>
-
-      <p>
-        I'm not talking about banning ads from the internet. I'm not a purist. Ads serve a purpose in many contexts.
-      </p>
-
-      <p>
-        But in games—in <em>interactive entertainment that requires your full attention and participation</em>—ads are fundamentally incompatible with the experience. They're a jarring interruption that yanks you out of the game world and forces you to engage with something else entirely.
-      </p>
-
-      <p>
-        <strong>Ad-free gaming means:</strong>
-      </p>
-
-      <ul>
-        <li><strong>No forced video ads</strong> before, during, or after gameplay</li>
-        <li><strong>No banner ads</strong> cluttering the UI</li>
-        <li><strong>No pop-up ads</strong> interrupting your flow</li>
-        <li><strong>No ads masquerading as tutorials</strong> that you're forced to watch</li>
-        <li><strong>No ads as "rewards"</strong> where you trade your time for something you should get for just playing the game</li>
-      </ul>
-
-      <p>
-        It means respecting the player's time and attention as a finite resource that deserves protection.
-      </p>
-
-      <h2>The Path Forward</h2>
-
-      <p>
-        Here's my manifesto: <strong>games should go ad-free</strong>.
-      </p>
-
-      <p>
-        Not all of them. Not immediately. But consciously, deliberately, as a choice.
-      </p>
-
-      <p>
-        If you're building a game, I'm asking you to do something radical: value your player's experience more than the ad impressions they generate. Build a game worth playing, and then monetize it with integrity.
-      </p>
-
-      <p>
-        Charge for it. Ask for donations. Sell cosmetics. Offer battle passes. Give power users premium features. Get creative. But don't treat your players like billboards.
-      </p>
-
-      <p>
-        And if you're a player? Vote with your feet. Delete games that abuse your attention with ads. Spend your money and your time on developers who respect you. Leave reviews that call out egregious ad practices. Make it clear: we're done with this.
-      </p>
-
-      <p>
-        The tide is turning. More players are willing to pay if it means peace from ads. More developers are realizing that a smaller, happier community is better than a large, resentful one.
-      </p>
-
-      <p>
-        We can have better games. Games that don't punish you for playing them.
-      </p>
-
-      <p>
-        <strong>Games with no ads. Ever.</strong>
-      </p>
-
-      <p>
-        <em>It's time.</em>
-      </p>
-
-      <hr />
-
-      <p className="text-sm text-gray-600">— 1775 Dev Team</p>
-    </article>
+        <div className="pt-4">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 font-body text-xs text-silver/45 uppercase tracking-widest hover:text-gold transition-colors"
+          >
+            ← Back to The Briefing
+          </Link>
+        </div>
+      </article>
+    </div>
   );
 }
