@@ -55,8 +55,8 @@ export default function CampaignsPage() {
 
   async function load() {
     setLoading(true)
-    const res = await fetch('/api/admin/data/campaigns?order=created_at.desc')
-    if (res.ok) { setCampaigns(await res.json()) } else { setError('campaigns table not found') }
+    const res = await fetch('/api/admin/data/campaigns?project=omniverse&order=created_at.desc')
+    if (res.ok) { setCampaigns(await res.json()) } else { setError('campaigns table error') }
     setLoading(false)
   }
   useEffect(() => { load() }, [])
@@ -64,14 +64,14 @@ export default function CampaignsPage() {
   async function save() {
     setSaving(true)
     const method = isNew ? 'POST' : 'PATCH'
-    const url = isNew ? '/api/admin/data/campaigns' : `/api/admin/data/campaigns/${(editing as Campaign).id}`
+    const url = isNew ? '/api/admin/data/campaigns?project=omniverse' : `/api/admin/data/campaigns/${(editing as Campaign).id}?project=omniverse`
     await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editing) })
     setEditing(null); await load(); setSaving(false)
   }
 
   async function del(id: string) {
     if (!confirm('Delete this campaign?')) return
-    await fetch(`/api/admin/data/campaigns/${id}`, { method: 'DELETE' })
+    await fetch(`/api/admin/data/campaigns/${id}?project=omniverse`, { method: 'DELETE' })
     await load()
   }
 

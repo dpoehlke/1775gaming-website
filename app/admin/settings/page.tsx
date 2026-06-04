@@ -1,88 +1,96 @@
 /**
- * /admin/settings — Admin settings and configuration.
- * Server Component.
+ * /admin/settings — Environment status and route reference.
  */
 export default function SettingsPage() {
-  const envOk = (key: string) => !!(process.env[key])
-  const checks = [
-    { label: 'NEXT_PUBLIC_SUPABASE_URL', ok: envOk('NEXT_PUBLIC_SUPABASE_URL') },
-    { label: 'NEXT_PUBLIC_SUPABASE_ANON_KEY', ok: envOk('NEXT_PUBLIC_SUPABASE_ANON_KEY') },
-    { label: 'SUPABASE_SERVICE_ROLE_KEY', ok: envOk('SUPABASE_SERVICE_ROLE_KEY') },
-    { label: 'ADMIN_SESSION_SECRET', ok: envOk('ADMIN_SESSION_SECRET') },
-    { label: 'ADMIN_USERNAME', ok: envOk('ADMIN_USERNAME') },
-    { label: 'ADMIN_PASSWORD_HASH', ok: envOk('ADMIN_PASSWORD_HASH') },
-  ]
-
+  const ok = (key: string) => !!(process.env[key]) && !process.env[key]?.startsWith('PASTE') && !process.env[key]?.startsWith('CHOOSE') && !process.env[key]?.startsWith('GENERATE')
   const section: React.CSSProperties = { background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '8px', padding: '20px', marginBottom: '16px' }
   const sTitle: React.CSSProperties = { fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', color: '#B8860B', letterSpacing: '0.08em', marginBottom: '16px' }
 
+  const envGroups = [
+    { title: '1775gaming.com project', vars: [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      'SUPABASE_SERVICE_ROLE_KEY',
+    ]},
+    { title: 'Omniverse game project', vars: [
+      'OMNIVERSE_SUPABASE_URL',
+      'OMNIVERSE_ANON_KEY',
+      'OMNIVERSE_SERVICE_ROLE_KEY',
+    ]},
+    { title: 'Admin auth', vars: [
+      'ADMIN_USERNAME',
+      'ADMIN_PASSWORD_HASH',
+      'ADMIN_SESSION_SECRET',
+    ]},
+  ]
+
+  const routes = [
+    // Website
+    { path: '/admin', label: 'Dashboard', db: '1775gaming', status: 'live' },
+    { path: '/admin/beta-signups', label: 'Beta Pioneers', db: '1775gaming', status: 'live' },
+    { path: '/admin/newsletter', label: 'Newsletter', db: '1775gaming', status: 'live' },
+    { path: '/admin/contact', label: 'Contact Inbox', db: '1775gaming', status: 'live' },
+    { path: '/admin/gpx', label: 'GPX Missions', db: '1775gaming', status: 'live' },
+    // Game
+    { path: '/admin/players', label: 'Players', db: 'omniverse', status: 'live' },
+    { path: '/admin/campaigns', label: 'Campaigns', db: 'omniverse', status: 'live' },
+    { path: '/admin/store', label: 'Store Items', db: 'omniverse', status: 'live' },
+    { path: '/admin/subscriptions', label: 'Subscriptions', db: 'static', status: 'live' },
+    { path: '/admin/world-lore', label: 'World Lore', db: 'omniverse', status: 'live' },
+    // Operations
+    { path: '/admin/analytics', label: 'Analytics', db: '1775gaming', status: 'live' },
+    { path: '/admin/support', label: 'Support Tickets', db: 'omniverse', status: 'live' },
+    { path: '/admin/fafo', label: 'FAFO Encounters', db: 'omniverse', status: 'live' },
+    { path: '/admin/pawnshop', label: "Pete's Pawn Shop", db: 'omniverse', status: 'live' },
+    { path: '/admin/auction', label: "Notheby's Auction", db: 'omniverse', status: 'live' },
+  ]
+
+  const DB_COLORS: Record<string, string> = { '1775gaming': '#CC0000', omniverse: '#8844CC', static: '#888' }
+
   return (
-    <div style={{ fontFamily: 'IBM Plex Sans, sans-serif', maxWidth: '700px' }}>
+    <div style={{ fontFamily: 'IBM Plex Sans, sans-serif', maxWidth: '720px' }}>
       <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px', color: 'white', margin: '0 0 4px' }}>SETTINGS</h1>
-      <p style={{ color: '#666', margin: '0 0 28px', fontSize: '13px' }}>Admin configuration and environment status</p>
+      <p style={{ color: '#666', margin: '0 0 28px', fontSize: '13px' }}>Environment status and admin configuration reference</p>
 
-      {/* Environment checks */}
-      <div style={section}>
-        <div style={sTitle}>ENVIRONMENT VARIABLES</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {checks.map(({ label, ok }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 0', borderBottom: '1px solid #2A2A2A' }}>
-              <span style={{ color: ok ? '#00AA44' : '#CC0000', fontSize: '16px' }}>{ok ? '✓' : '✗'}</span>
-              <code style={{ color: ok ? '#C0C0C0' : '#CC6666', fontSize: '13px', flex: 1 }}>{label}</code>
-              <span style={{ color: ok ? '#00AA44' : '#CC0000', fontSize: '11px', fontFamily: 'Bebas Neue, sans-serif' }}>{ok ? 'SET' : 'MISSING'}</span>
-            </div>
-          ))}
+      {/* Env var groups */}
+      {envGroups.map(group => (
+        <div key={group.title} style={section}>
+          <div style={sTitle}>{group.title.toUpperCase()}</div>
+          {group.vars.map(key => {
+            const isSet = ok(key)
+            return (
+              <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 0', borderBottom: '1px solid #1F1F1F' }}>
+                <span style={{ color: isSet ? '#00AA44' : '#CC0000', fontSize: '15px' }}>{isSet ? '✓' : '✗'}</span>
+                <code style={{ color: isSet ? '#C0C0C0' : '#CC6666', fontSize: '12px', flex: 1 }}>{key}</code>
+                <span style={{ color: isSet ? '#00AA44' : '#CC0000', fontSize: '10px', fontFamily: 'Bebas Neue, sans-serif', flexShrink: 0 }}>{isSet ? 'SET' : 'MISSING'}</span>
+              </div>
+            )
+          })}
         </div>
-      </div>
+      ))}
 
-      {/* Admin routes reference */}
+      {/* Note about OMNIVERSE_SERVICE_ROLE_KEY */}
+      {!ok('OMNIVERSE_SERVICE_ROLE_KEY') && (
+        <div style={{ background: '#1A1200', border: '1px solid #B8860B40', borderRadius: '8px', padding: '16px', marginBottom: '16px' }}>
+          <div style={{ fontFamily: 'Bebas Neue, sans-serif', color: '#B8860B', marginBottom: '6px' }}>ACTION REQUIRED</div>
+          <p style={{ color: '#C0C0C0', fontSize: '13px', margin: 0, lineHeight: 1.6 }}>
+            To enable game management pages (Players, Campaigns, Store, FAFO, Support, Pete's, Notheby's, World Lore), add <code style={{ color: '#B8860B' }}>OMNIVERSE_SERVICE_ROLE_KEY</code> to:<br />
+            1. <strong>.env.local</strong> (local dev)<br />
+            2. <strong>Vercel → Project → Settings → Environment Variables</strong> (production)<br /><br />
+            Find the key at: <strong>Supabase → Omniverse Project → Settings → API → service_role (secret)</strong>
+          </p>
+        </div>
+      )}
+
+      {/* Route table */}
       <div style={section}>
         <div style={sTitle}>ADMIN ROUTES</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          {[
-            { path: '/admin', label: 'Dashboard', status: 'live' },
-            { path: '/admin/beta-signups', label: 'Beta Signups', status: 'live' },
-            { path: '/admin/newsletter', label: 'Newsletter', status: 'live' },
-            { path: '/admin/gpx', label: 'GPX Upload', status: 'live' },
-            { path: '/admin/players', label: 'Players', status: 'needs table' },
-            { path: '/admin/campaigns', label: 'Campaigns', status: 'needs table' },
-            { path: '/admin/store', label: 'Store Items', status: 'needs table' },
-            { path: '/admin/subscriptions', label: 'Subscriptions', status: 'live' },
-            { path: '/admin/analytics', label: 'Analytics', status: 'live' },
-            { path: '/admin/world-lore', label: 'World Lore', status: 'needs table' },
-            { path: '/admin/support', label: 'Support Tickets', status: 'needs table' },
-            { path: '/admin/fafo', label: 'FAFO Encounters', status: 'needs table' },
-            { path: '/admin/pawnshop', label: "Pete's Pawn Shop", status: 'needs table' },
-            { path: '/admin/auction', label: "Notheby's Auction", status: 'needs table' },
-          ].map(({ path, label, status }) => (
-            <div key={path} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 0', borderBottom: '1px solid #1F1F1F' }}>
-              <code style={{ color: '#888', fontSize: '12px', width: '220px', flexShrink: 0 }}>{path}</code>
-              <span style={{ color: '#C0C0C0', fontSize: '12px', flex: 1 }}>{label}</span>
-              <span style={{ color: status === 'live' ? '#00AA44' : '#B8860B', fontSize: '10px', fontFamily: 'Bebas Neue, sans-serif' }}>
-                {status === 'live' ? 'LIVE' : 'NEEDS TABLE'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Game tables needed */}
-      <div style={section}>
-        <div style={sTitle}>SUPABASE TABLES TO CREATE</div>
-        <p style={{ color: '#666', fontSize: '12px', marginBottom: '12px' }}>These tables need to be created in your Supabase project to enable the game management features:</p>
-        {[
-          { name: 'player_profiles', cols: 'id, display_name, created_by (email), subscription_tier, caps_remaining, caps_daily_limit, whitelist_tier, whitelist_expires, created_at' },
-          { name: 'campaigns', cols: 'id, title, description, status, difficulty, power_level, min_tier, player_count, estimated_chapters, is_origin_campaign, world_info, overarching_story, ai_instructions, chapters (jsonb), created_at' },
-          { name: 'store_items', cols: 'id, name, description, category, price, price_type, active, is_permanent, created_at' },
-          { name: 'world_lore', cols: 'id, universe_overview, history_and_origin, geography, factions, technology_and_magic, tone_and_themes, ai_gm_instructions, key_npcs (jsonb), key_locations (jsonb), lore_tags (jsonb), updated_at' },
-          { name: 'support_tickets', cols: 'id, subject, category, priority, status, player_display_name, player_email, messages (jsonb), created_date, resolved_at' },
-          { name: 'encounter_sessions', cols: 'id, character_name, encounter_title, difficulty_tier, success, is_crit_success, is_crit_fail, rewards_currency, rewards_caps, rewards_loot_name, encounter_date' },
-          { name: 'pawn_sales', cols: 'id, item_name, item_rarity, item_type, oc_received, market_multiplier, campaign_chapter, created_date' },
-          { name: 'auction_listings', cols: 'id, item_name, item_rarity, status, asking_price, seller_name, seller_id, buyer_name, sold_at, created_date, updated_date' },
-        ].map(({ name, cols }) => (
-          <div key={name} style={{ marginBottom: '12px', padding: '12px', background: '#111', borderRadius: '6px', border: '1px solid #2A2A2A' }}>
-            <code style={{ color: '#CC0000', fontSize: '13px', fontWeight: 600 }}>{name}</code>
-            <p style={{ color: '#666', fontSize: '11px', margin: '4px 0 0', lineHeight: 1.5 }}>{cols}</p>
+        {routes.map(({ path, label, db, status }) => (
+          <div key={path} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 0', borderBottom: '1px solid #1A1A1A' }}>
+            <code style={{ color: '#555', fontSize: '12px', width: '220px', flexShrink: 0 }}>{path}</code>
+            <span style={{ color: '#C0C0C0', fontSize: '12px', flex: 1 }}>{label}</span>
+            <span style={{ color: DB_COLORS[db] ?? '#888', fontSize: '10px', fontFamily: 'Bebas Neue, sans-serif', flexShrink: 0, minWidth: '80px', textAlign: 'right' }}>{db}</span>
+            <span style={{ color: '#00AA44', fontSize: '10px', fontFamily: 'Bebas Neue, sans-serif' }}>LIVE</span>
           </div>
         ))}
       </div>

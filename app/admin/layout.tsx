@@ -12,6 +12,7 @@ const NAV = [
     { href: '/admin',             label: 'Dashboard',         icon: '⬛' },
     { href: '/admin/beta-signups',label: 'Beta Pioneers',     icon: '🧪' },
     { href: '/admin/newsletter',  label: 'Newsletter',        icon: '📧' },
+    { href: '/admin/contact',     label: 'Contact Inbox',     icon: '✉️' },
     { href: '/admin/gpx',         label: 'GPX Missions',      icon: '🗺️' },
   ]},
   { section: 'GAME', items: [

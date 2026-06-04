@@ -1,15 +1,24 @@
 /**
  * Generic admin data API — GET list, POST create.
+ * Supports ?project=omniverse to route to the Omniverse game project.
  * Protected by admin session cookie.
  */
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySession, ADMIN_COOKIE } from '@/lib/admin-auth'
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-)
+function getClient(project?: string | null) {
+  if (project === 'omniverse') {
+    return createClient(
+      process.env.OMNIVERSE_SUPABASE_URL ?? 'https://vduwwzudizksjwtvjnfr.supabase.co',
+      process.env.OMNIVERSE_SERVICE_ROLE_KEY ?? '',
+    )
+  }
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  )
+}
 
 async function auth(request: NextRequest) {
   const token = request.cookies.get(ADMIN_COOKIE)?.value
@@ -20,20 +29,21 @@ export async function GET(request: NextRequest, { params }: { params: { table: s
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { searchParams } = new URL(request.url)
-  const order = searchParams.get('order') // e.g. "created_at.desc"
+  const project = searchParams.get('project')
+  const order = searchParams.get('order')
   const limit = searchParams.get('limit')
-  const filter = searchParams.get('filter') // e.g. "status=eq.active"
+  const filter = searchParams.get('filter') // col=eq.val
+  const select = searchParams.get('select') ?? '*'
 
-  let query = supabaseAdmin.from(params.table).select('*')
-  if (order) {
-    const [col, dir] = order.split('.')
-    query = query.order(col, { ascending: dir !== 'desc' })
-  }
+  const db = getClient(project)
+  let query = db.from(params.table).select(select)
+  if (order) { const [col, dir] = order.split('.'); query = query.order(col, { ascending: dir !== 'desc' }) }
   if (limit) query = query.limit(parseInt(limit))
   if (filter) {
-    const [col, op_val] = filter.split('=')
-    const [op, val] = op_val.split('.')
+    const [col, rest] = filter.split('=')
+    const [op, val] = rest.split('.')
     if (op === 'eq') query = query.eq(col, val)
+    if (op === 'neq') query = query.neq(col, val)
   }
 
   const { data, error } = await query
@@ -44,8 +54,10 @@ export async function GET(request: NextRequest, { params }: { params: { table: s
 export async function POST(request: NextRequest, { params }: { params: { table: string } }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const { searchParams } = new URL(request.url)
+  const db = getClient(searchParams.get('project'))
   const body = await request.json()
-  const { data, error } = await supabaseAdmin.from(params.table).insert([body]).select().single()
+  const { data, error } = await db.from(params.table).insert([body]).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data, { status: 201 })
 }
