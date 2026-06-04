@@ -78,23 +78,20 @@ export default function GPXUploadPage() {
 
   return (
     <div style={{
-      background: '#0D0D0D',
-      minHeight:  '100vh',
-      padding:    '40px 24px',
       color:      'white',
       fontFamily: 'IBM Plex Sans, sans-serif',
     }}>
       {/* Header */}
       <h1 style={{
         fontFamily:    'Bebas Neue, sans-serif',
-        fontSize:      '48px',
+        fontSize:      '42px',
         color:         '#CC0000',
         margin:        '0 0 4px',
         letterSpacing: '0.05em',
       }}>
         GPX MISSION UPLOADER
       </h1>
-      <p style={{ color: '#C0C0C0', margin: '0 0 40px' }}>
+      <p style={{ color: '#666', margin: '0 0 32px', fontSize: '13px' }}>
         Upload GPX files to create mission routes and AR anchor points
       </p>
 

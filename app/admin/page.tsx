@@ -32,65 +32,45 @@ export default async function AdminDashboard() {
   ]
 
   return (
-    <div style={{ background: '#0D0D0D', minHeight: '100vh', fontFamily: 'IBM Plex Sans, sans-serif' }}>
-      {/* Top bar */}
-      <div style={{
-        background: '#1A1A1A', borderBottom: '2px solid #CC0000',
-        padding: '16px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
-        <div>
-          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color: '#CC0000', letterSpacing: '0.1em' }}>
-            1775 GAMING
-          </span>
-          <span style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '14px', color: '#B8860B', letterSpacing: '0.2em', marginLeft: '12px' }}>
-            COMMAND CENTER
-          </span>
-        </div>
-        <a href="/admin/signout" style={{ color: '#666', fontSize: '13px', textDecoration: 'none' }}>
-          Sign out
-        </a>
+    <div style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}>
+      <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '42px', color: 'white', margin: '0 0 4px' }}>
+        MISSION BRIEFING
+      </h1>
+      <p style={{ color: '#666', margin: '0 0 32px', fontSize: '13px' }}>Live stats — 1775 Gaming LLC</p>
+
+      {/* Stats grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '40px' }}>
+        {stats.map((stat) => (
+          <a key={stat.label} href={stat.href} style={{
+            background: '#1A1A1A', border: '1px solid #2A2A2A',
+            borderTop: `3px solid ${stat.color}`, borderRadius: '8px',
+            padding: '24px', textDecoration: 'none', display: 'block',
+          }}>
+            <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '52px', color: stat.color, lineHeight: 1 }}>
+              {stat.value}
+            </div>
+            <div style={{ color: '#888', fontSize: '11px', letterSpacing: '0.15em', marginTop: '8px' }}>
+              {stat.label}
+            </div>
+          </a>
+        ))}
       </div>
 
-      <div style={{ padding: '40px' }}>
-        <h1 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '48px', color: 'white', margin: '0 0 8px' }}>
-          MISSION BRIEFING
-        </h1>
-        <p style={{ color: '#C0C0C0', margin: '0 0 40px' }}>Live stats for 1775 Gaming LLC</p>
-
-        {/* Stats grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginBottom: '48px' }}>
-          {stats.map((stat) => (
-            <a key={stat.label} href={stat.href} style={{
-              background: '#1A1A1A', border: '1px solid #333',
-              borderTop: `3px solid ${stat.color}`, borderRadius: '8px',
-              padding: '32px', textDecoration: 'none', display: 'block',
-            }}>
-              <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '64px', color: stat.color, lineHeight: 1 }}>
-                {stat.value}
-              </div>
-              <div style={{ color: '#C0C0C0', fontSize: '12px', letterSpacing: '0.15em', marginTop: '8px' }}>
-                {stat.label}
-              </div>
-            </a>
-          ))}
-        </div>
-
-        {/* Quick actions */}
-        <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '28px', color: '#B8860B', margin: '0 0 20px' }}>
-          QUICK ACTIONS
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', maxWidth: '600px' }}>
-          {actions.map((action) => (
-            <a key={action.label} href={action.href} style={{
-              background: action.bg, color: 'white', padding: '16px 24px',
-              borderRadius: '4px', textDecoration: 'none',
-              fontFamily: 'Bebas Neue, sans-serif', fontSize: '16px',
-              letterSpacing: '0.1em', textAlign: 'center', display: 'block',
-            }}>
-              {action.label}
-            </a>
-          ))}
-        </div>
+      {/* Quick actions */}
+      <h2 style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#B8860B', margin: '0 0 16px', letterSpacing: '0.08em' }}>
+        QUICK ACTIONS
+      </h2>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px', maxWidth: '700px' }}>
+        {actions.map((action) => (
+          <a key={action.label} href={action.href} style={{
+            background: action.bg, color: 'white', padding: '14px 20px',
+            borderRadius: '4px', textDecoration: 'none',
+            fontFamily: 'Bebas Neue, sans-serif', fontSize: '14px',
+            letterSpacing: '0.1em', textAlign: 'center', display: 'block',
+          }}>
+            {action.label}
+          </a>
+        ))}
       </div>
     </div>
   )
