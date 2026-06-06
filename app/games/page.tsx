@@ -227,7 +227,28 @@ export default function GamesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1 — Project Liberty */}
+            {/* Card 1 — Desolation */}
+            <Link
+              href="/games/desolation"
+              className="group relative bg-charcoal border border-white/5 hover:border-gold/40 transition-all duration-300 overflow-hidden cursor-pointer"
+            >
+              <div className="h-40 bg-gradient-to-br from-amber-900/25 to-charcoal" />
+              <div className="p-8">
+                <h3 className="font-heading text-2xl text-gold tracking-wide mb-3">
+                  DESOLATION
+                </h3>
+                <p className="font-body text-silver/75 text-sm leading-relaxed">
+                  Post-apocalyptic survival where your choices reshape civilization. Will you lead or conquer?
+                </p>
+              </div>
+              <div className="absolute top-4 left-4 z-20 bg-amber-700 px-3 py-1">
+                <span className="font-body text-[10px] font-bold uppercase tracking-widest text-white">
+                  In Development
+                </span>
+              </div>
+            </Link>
+
+            {/* Card 2 — Project Liberty */}
             <div className="group relative bg-charcoal border border-white/5 hover:border-scarlet/40 transition-all duration-300 overflow-hidden">
               <div className="h-40 bg-gradient-to-br from-blue-900/30 to-charcoal" />
               <div className="p-8">
@@ -248,7 +269,7 @@ export default function GamesPage() {
               </div>
             </div>
 
-            {/* Card 2 — Iron Patriots */}
+            {/* Card 3 — Iron Patriots */}
             <div className="group relative bg-charcoal border border-white/5 hover:border-scarlet/40 transition-all duration-300 overflow-hidden">
               <div className="h-40 bg-gradient-to-br from-emerald-900/30 to-charcoal" />
               <div className="p-8">
@@ -259,25 +280,6 @@ export default function GamesPage() {
                   A cooperative mobile shooter with real-world geolocation
                   missions
                 </p>
-              </div>
-              <div className="absolute inset-0 bg-marine-black/65 backdrop-blur-[2px] z-10 group-hover:bg-marine-black/55 transition-all duration-300" />
-              <div className="absolute top-4 left-4 z-20 bg-gold px-3 py-1">
-                <span className="font-body text-[10px] font-bold uppercase tracking-widest text-marine-black">
-                  Coming Soon
-                </span>
-              </div>
-            </div>
-
-            {/* Card 3 — Classified */}
-            <div className="group relative bg-charcoal border border-white/5 hover:border-scarlet/40 transition-all duration-300 overflow-hidden">
-              <div className="h-40 bg-gradient-to-br from-scarlet/15 to-charcoal" />
-              <div className="p-8">
-                <div className="flex flex-col items-center justify-center py-4 gap-4">
-                  <PadlockIcon />
-                  <p className="font-heading text-5xl text-silver/15 tracking-widest">
-                    ???
-                  </p>
-                </div>
               </div>
               <div className="absolute inset-0 bg-marine-black/65 backdrop-blur-[2px] z-10 group-hover:bg-marine-black/55 transition-all duration-300" />
               <div className="absolute top-4 left-4 z-20 bg-gold px-3 py-1">

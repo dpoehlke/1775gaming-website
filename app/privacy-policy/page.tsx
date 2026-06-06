@@ -1,13 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 
-export const revalidate = 3600 // re-fetch from Supabase max once per hour
+export const revalidate = 3600
 
-export default async function TermsPage() {
+export default async function PrivacyPolicyPage() {
   const supabase = createClient()
   const { data } = await supabase
     .from('legal_documents')
     .select('*')
-    .eq('document_type', 'terms')
+    .eq('document_type', 'privacy-policy')
     .eq('is_active', true)
     .single()
 

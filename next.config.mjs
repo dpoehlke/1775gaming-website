@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     formats: ['image/webp'],
     remotePatterns: [],
@@ -27,6 +24,24 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains',
+          },
+          {
+            // Allows Google Analytics inline scripts and self-hosted fonts/styles.
+            // 'unsafe-inline' for scripts is required by the gtag snippet in layout.tsx.
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: https:",
+              "font-src 'self'",
+              "connect-src 'self' https://www.google-analytics.com https://analytics.google.com",
+              "frame-ancestors 'none'",
+            ].join('; '),
           },
         ],
       },

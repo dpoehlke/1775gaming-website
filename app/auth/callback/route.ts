@@ -16,7 +16,8 @@ const SITE_URL       = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.1775gami
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code     = searchParams.get('code')
-  const redirect = searchParams.get('redirect') || '/admin'
+  const rawRedirect = searchParams.get('redirect') || ''
+  const redirect    = rawRedirect.startsWith('/') && !rawRedirect.startsWith('//') ? rawRedirect : '/admin'
   const error    = searchParams.get('error')
 
   // OAuth error (user denied, etc.) — back to login
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (code) {
-    const supabase = createSupabaseServerClient()
+    const supabase = await createSupabaseServerClient()
     const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!exchangeError && data.session) {

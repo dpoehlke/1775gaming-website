@@ -27,7 +27,8 @@ const LABEL_STYLE: React.CSSProperties = {
 function LoginForm() {
   const router       = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo   = searchParams.get('redirect') || '/admin'
+  const raw        = searchParams.get('redirect') || ''
+  const redirectTo = raw.startsWith('/') && !raw.startsWith('//') ? raw : '/admin'
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')

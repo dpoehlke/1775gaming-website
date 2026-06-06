@@ -28,6 +28,16 @@ export async function GET(request: NextRequest) {
   const lon    = lonParam    ? parseFloat(lonParam)    : null
   const radius = radiusParam ? parseFloat(radiusParam) : 50_000
 
+  if (lat !== null && (isNaN(lat) || lat < -90 || lat > 90)) {
+    return NextResponse.json({ error: 'Invalid lat parameter' }, { status: 400 })
+  }
+  if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
+    return NextResponse.json({ error: 'Invalid lon parameter' }, { status: 400 })
+  }
+  if (isNaN(radius) || radius < 0 || radius > 40_000_000) {
+    return NextResponse.json({ error: 'Invalid radius parameter' }, { status: 400 })
+  }
+
   try {
     const { data: routes, error } = await supabase
       .from('mission_routes')
@@ -81,7 +91,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Server error'
-    return NextResponse.json({ error: message }, { status: 500 })
+    console.error('[api/routes/nearby]', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
