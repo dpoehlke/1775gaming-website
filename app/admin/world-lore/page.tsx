@@ -152,7 +152,7 @@ export default function WorldLorePage() {
                   <button onClick={() => deleteItem('world_lore', entry.id)} style={{ background: '#1F0D0D', color: '#CC4444', border: '1px solid #CC444420', borderRadius: '4px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer' }}>Del</button>
                 </div>
               </div>
-              <div style={{ color: '#888', fontSize: '12px', lineHeight: 1.6 }}>{entry.body?.slice(0, 200)}{entry.body?.length > 200 ? '…' : ''}</div>
+              <div style={{ color: '#888', fontSize: '12px', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{entry.body}</div>
             </div>
           ))}
           {lore.length === 0 && <div style={{ color: '#444', padding: '20px', textAlign: 'center' }}>No lore entries yet.</div>}
@@ -178,8 +178,9 @@ export default function WorldLorePage() {
                     <button onClick={() => deleteItem('world_npcs', npc.id)} style={{ background: '#1F0D0D', color: '#CC4444', border: '1px solid #CC444420', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', cursor: 'pointer' }}>Del</button>
                   </div>
                 </div>
-                {npc.description && <div style={{ color: '#888', fontSize: '12px', marginBottom: '6px' }}>{npc.description?.slice(0, 100)}…</div>}
+                {npc.description && <div style={{ color: '#888', fontSize: '12px', marginBottom: '6px', whiteSpace: 'pre-wrap' }}>{npc.description}</div>}
                 {npc.demeanor && <div style={{ color: '#555', fontSize: '11px' }}>Demeanor: {npc.demeanor}</div>}
+                {npc.motivations && <div style={{ color: '#555', fontSize: '11px', marginTop: '2px' }}>Motivations: {npc.motivations}</div>}
               </div>
             ))}
           </div>
@@ -206,8 +207,8 @@ export default function WorldLorePage() {
                     <button onClick={() => deleteItem('world_factions', f.id)} style={{ background: '#1F0D0D', color: '#CC4444', border: '1px solid #CC444420', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', cursor: 'pointer' }}>Del</button>
                   </div>
                 </div>
-                {f.description && <div style={{ color: '#888', fontSize: '12px', marginBottom: '6px' }}>{f.description?.slice(0, 120)}…</div>}
-                {f.goals && <div style={{ color: '#555', fontSize: '11px' }}>Goals: {f.goals?.slice(0, 80)}…</div>}
+                {f.description && <div style={{ color: '#888', fontSize: '12px', marginBottom: '6px', whiteSpace: 'pre-wrap' }}>{f.description}</div>}
+                {f.goals && <div style={{ color: '#555', fontSize: '11px', whiteSpace: 'pre-wrap' }}>Goals: {f.goals}</div>}
               </div>
             ))}
           </div>
@@ -234,7 +235,7 @@ export default function WorldLorePage() {
                     <button onClick={() => deleteItem('world_pois', poi.id)} style={{ background: '#1F0D0D', color: '#CC4444', border: '1px solid #CC444420', borderRadius: '4px', padding: '3px 8px', fontSize: '11px', cursor: 'pointer' }}>Del</button>
                   </div>
                 </div>
-                {poi.description && <div style={{ color: '#888', fontSize: '12px' }}>{poi.description?.slice(0, 100)}…</div>}
+                {poi.description && <div style={{ color: '#888', fontSize: '12px', whiteSpace: 'pre-wrap' }}>{poi.description}</div>}
                 {poi.location_hint && <div style={{ color: '#555', fontSize: '11px', marginTop: '4px' }}>📍 {poi.location_hint}</div>}
               </div>
             ))}
