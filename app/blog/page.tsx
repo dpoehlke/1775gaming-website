@@ -77,15 +77,16 @@ const POSTS: Post[] = [
     accentColor: "text-gold",
   },
   {
-    slug: "beta-program-launch",
+    slug: "alpha-tester-signup",
     category: "BETA UPDATES",
-    date: "April 10, 2026",
-    readTime: "4 min read",
-    title: "Beta Applications Are Open — Here's What to Expect",
+    date: "June 12, 2026",
+    readTime: "5 min read",
+    title: "Alpha Testers Wanted: Be First. Shape Everything.",
     excerpt:
-      "The closed beta for Omniverse: Ascension is accepting its first wave of testers. Learn what's being tested, what perks beta testers receive, and how to apply.",
+      "We're opening a small, elite group of Alpha Testers to help us forge OMNIVERSE: Ascension in real time. Active Alphas earn automatic Beta access — and there might just be a lifetime upgrade waiting for the ones who show up.",
     gradient: "from-purple-700/25 via-purple-700/8 to-transparent",
     accentColor: "text-purple-400",
+    published: true,
   },
   {
     slug: "mutants-masterminds-framework",
@@ -120,6 +121,18 @@ const POSTS: Post[] = [
       "You're three seconds into a gaming session, five minutes before your next meeting — and a 30-second ad erupts. A manifesto on why ad-supported games are contemptible, and how to do better.",
     gradient: "from-rose-700/25 via-rose-700/8 to-transparent",
     accentColor: "text-rose-400",
+    published: true,
+  },
+  {
+    slug: "desolation-world-awaits",
+    category: "GAME ANNOUNCEMENT",
+    date: "May 27, 2026",
+    readTime: "7 min read",
+    title: "Desolation: The World Awaits Your Choice",
+    excerpt:
+      "Our second title is in development: a post-apocalyptic survival RPG set in a world destroyed by war. Your choices determine if humanity rises or falls into darkness.",
+    gradient: "from-amber-700/25 via-amber-700/8 to-transparent",
+    accentColor: "text-amber-400",
     published: true,
   },
 ];
