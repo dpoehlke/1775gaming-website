@@ -11,13 +11,14 @@ async function auth(req: NextRequest) {
   return verifySession(token, process.env.ADMIN_SESSION_SECRET ?? '')
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!await auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { id } = await params
 
   const { data: characters, error: charErr } = await omniverseAdmin
     .from('characters')
     .select('id, name, hero_name, archetype, power_level, total_power_points, abilities, skills, advantages, powers, defenses, offense, equipment, status, is_villain, created_at')
-    .eq('player_id', params.id)
+    .eq('player_id', id)
     .order('created_at', { ascending: true })
 
   if (charErr) return NextResponse.json({ error: charErr.message }, { status: 500 })

@@ -11,7 +11,8 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 )
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const token = request.cookies.get(ADMIN_COOKIE)?.value
   const valid = await verifySession(token, process.env.ADMIN_SESSION_SECRET ?? '')
   if (!valid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -25,7 +26,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   const { error } = await supabaseAdmin
     .from('beta_signups')
     .update({ status })
-    .eq('id', params.id)
+    .eq('id', id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })

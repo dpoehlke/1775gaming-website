@@ -25,9 +25,10 @@ async function auth(request: NextRequest) {
   return verifySession(token, process.env.ADMIN_SESSION_SECRET ?? '')
 }
 
-export async function GET(request: NextRequest, { params }: { params: { table: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ table: string }> }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const { table } = await params
   const { searchParams } = new URL(request.url)
   const project = searchParams.get('project')
   const order = searchParams.get('order')
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest, { params }: { params: { table: s
   const select = searchParams.get('select') ?? '*'
 
   const db = getClient(project)
-  let query = db.from(params.table).select(select)
+  let query = db.from(table).select(select)
   if (order) { const [col, dir] = order.split('.'); query = query.order(col, { ascending: dir !== 'desc' }) }
   if (limit) query = query.limit(parseInt(limit))
   if (filter) {
@@ -51,13 +52,14 @@ export async function GET(request: NextRequest, { params }: { params: { table: s
   return NextResponse.json(data)
 }
 
-export async function POST(request: NextRequest, { params }: { params: { table: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ table: string }> }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const { table } = await params
   const { searchParams } = new URL(request.url)
   const db = getClient(searchParams.get('project'))
   const body = await request.json()
-  const { data, error } = await db.from(params.table).insert([body]).select().single()
+  const { data, error } = await db.from(table).insert([body]).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data, { status: 201 })
 }

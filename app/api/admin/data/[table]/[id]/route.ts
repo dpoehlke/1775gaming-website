@@ -25,27 +25,30 @@ async function auth(request: NextRequest) {
   return verifySession(token, process.env.ADMIN_SESSION_SECRET ?? '')
 }
 
-export async function GET(request: NextRequest, { params }: { params: { table: string; id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ table: string; id: string }> }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { table, id } = await params
   const { searchParams } = new URL(request.url)
-  const { data, error } = await getClient(searchParams.get('project')).from(params.table).select('*').eq('id', params.id).single()
+  const { data, error } = await getClient(searchParams.get('project')).from(table).select('*').eq('id', id).single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: { table: string; id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ table: string; id: string }> }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { table, id } = await params
   const { searchParams } = new URL(request.url)
   const body = await request.json()
-  const { error } = await getClient(searchParams.get('project')).from(params.table).update(body).eq('id', params.id)
+  const { error } = await getClient(searchParams.get('project')).from(table).update(body).eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { table: string; id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ table: string; id: string }> }) {
   if (!await auth(request)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const { table, id } = await params
   const { searchParams } = new URL(request.url)
-  const { error } = await getClient(searchParams.get('project')).from(params.table).delete().eq('id', params.id)
+  const { error } = await getClient(searchParams.get('project')).from(table).delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

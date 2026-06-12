@@ -13,7 +13,7 @@ async function auth(req: NextRequest) {
   return verifySession(token, process.env.ADMIN_SESSION_SECRET ?? '')
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!await auth(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { action, value, reason } = await req.json() as {
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     reason?: string
   }
 
-  const profileId = params.id
+  const { id: profileId } = await params
 
   if (action === 'set_tier_timed') {
     // value = "TIER:ISO_DATE" e.g. "2:2026-12-31T00:00:00Z"
