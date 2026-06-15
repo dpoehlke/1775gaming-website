@@ -45,6 +45,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     p_target_id: profileId,
     p_value: value ?? null,
     p_reason: reason ?? null,
+    p_data: null,
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
