@@ -10,7 +10,7 @@
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
 
-const SUPERADMIN_UID = 'a4e1c087-2f83-4f94-9ec6-113121c744a1'
+const SUPERADMIN_UID = process.env.ADMIN_UID ?? ''
 const SITE_URL       = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.1775gaming.com'
 
 export async function GET(request: NextRequest) {

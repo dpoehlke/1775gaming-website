@@ -2,11 +2,26 @@
  * POST /api/admin/auth
  *
  * Verifies username + password against env vars.
+ * Password is stored as "sha256:<hex-salt>:<hex-digest>" in ADMIN_PASSWORD_HASH.
  * On success sets a signed httpOnly session cookie.
  * On failure waits 500 ms before responding (slows brute force).
  */
 import { createSession, ADMIN_COOKIE, SESSION_MAX_AGE } from '@/lib/admin-auth'
 import { NextRequest, NextResponse } from 'next/server'
+import { createHash, timingSafeEqual } from 'crypto'
+
+function verifyPassword(candidate: string, stored: string): boolean {
+  // stored format: "sha256:<hex-salt>:<hex-digest>"
+  const parts = stored.split(':')
+  if (parts.length !== 3 || parts[0] !== 'sha256') return false
+  const [, salt, expected] = parts
+  const actual = createHash('sha256').update(salt + candidate).digest('hex')
+  try {
+    return timingSafeEqual(Buffer.from(actual, 'hex'), Buffer.from(expected, 'hex'))
+  } catch {
+    return false
+  }
+}
 
 export async function POST(request: NextRequest) {
   let username = '', password = ''
@@ -18,8 +33,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
 
-  const validUser = username === process.env.ADMIN_USERNAME
-  const validPass = password === process.env.ADMIN_PASSWORD
+  const storedHash = process.env.ADMIN_PASSWORD_HASH ?? ''
+  const validUser = timingSafeEqual(
+    Buffer.from(username.padEnd(64)),
+    Buffer.from((process.env.ADMIN_USERNAME ?? '').padEnd(64)),
+  )
+  const validPass = storedHash ? verifyPassword(password, storedHash) : false
 
   if (!validUser || !validPass) {
     await new Promise((r) => setTimeout(r, 500)) // rate-limit hint

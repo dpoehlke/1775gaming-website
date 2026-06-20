@@ -27,7 +27,10 @@ const STATUS_COLORS: Record<string, string> = {
   open: '#B8860B', in_progress: '#00D4FF', resolved: '#00AA44', closed: '#444',
 }
 
-const API = (path: string) => `/api/admin/data/${path}?project=omniverse`
+const API = (path: string, query?: string) => {
+  const qs = query ? `&${query}` : ''
+  return `/api/admin/data/${path}?project=omniverse${qs}`
+}
 
 export default function SupportPage() {
   const [tickets, setTickets] = useState<Ticket[]>([])
@@ -40,7 +43,7 @@ export default function SupportPage() {
   const [sending, setSending] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch(API('support_tickets?order=updated_at.desc&limit=200'))
+    fetch(API('support_tickets', 'order=updated_at.desc&limit=200'))
       .then(r => r.ok ? r.json() : Promise.reject(r))
       .then(d => { setTickets(d); setLoading(false) })
       .catch(() => { setError('support_tickets error — check Omniverse service role key'); setLoading(false) })

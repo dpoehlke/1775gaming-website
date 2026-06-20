@@ -1,16 +1,15 @@
 'use client'
 import { useState } from 'react'
+import {
+  Sale, Tab, TAB_NAMES, inputStyle, btnBase, isActive,
+  SaleForm, SalesTab,
+} from '@/components/admin/sale-management'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type StoreItem = {
   id: string; name: string; description: string | null; category: string
   price: number; price_type: string; quantity: number | null; active: boolean
   sort_order: number; icon_url: string | null; min_tier: number; revenuecat_product_id: string | null
-}
-type Sale = {
-  id: string; item_id: string; item_type: string; item_name: string
-  discount_percent: number; starts_at: string; ends_at: string
-  label: string | null; created_at: string
 }
 type Purchase = {
   id: string; item_name: string; category: string
@@ -23,26 +22,11 @@ const CAT_COLORS: Record<string, string> = {
   caps: '#3b82f6', victory_points: '#a855f7', character_points: '#f59e0b',
   currency: '#10b981', sidekick: '#ec4899', team_up: '#ef4444', contact: '#9ca3af', portrait: '#06b6d4',
 }
+const ACCENT = '#3b82f6'
 
-// ── Shared styles ──────────────────────────────────────────────────────────────
-const inputStyle: React.CSSProperties = {
-  background: '#111', border: '1px solid #333', color: 'white',
-  padding: '7px 10px', borderRadius: '4px', fontSize: '13px', width: '100%', boxSizing: 'border-box',
-}
 const LABEL: React.CSSProperties = {
-  color: '#3b82f6', fontSize: '10px', letterSpacing: '0.15em', fontWeight: 700,
+  color: ACCENT, fontSize: '10px', letterSpacing: '0.15em', fontWeight: 700,
   display: 'block', marginBottom: '3px',
-}
-const btnBase: React.CSSProperties = {
-  border: 'none', borderRadius: '4px', padding: '6px 12px',
-  fontSize: '11px', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.06em',
-}
-const TAB_NAMES = ['ANALYTICS', 'CATALOG', 'SALES'] as const
-type Tab = typeof TAB_NAMES[number]
-
-function isActive(s: Sale) {
-  const now = Date.now()
-  return new Date(s.starts_at).getTime() <= now && new Date(s.ends_at).getTime() > now
 }
 
 // ── Item Modal ─────────────────────────────────────────────────────────────────
@@ -87,7 +71,7 @@ function ItemModal({ item, onClose, onSaved }: { item: Partial<StoreItem> | null
   return (
     <div style={overlay} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={box}>
-        <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: '#3b82f6', marginBottom: '20px' }}>
+        <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', color: ACCENT, marginBottom: '20px' }}>
           {isNew ? 'NEW SHOP ITEM' : 'EDIT ITEM'}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -126,70 +110,13 @@ function ItemModal({ item, onClose, onSaved }: { item: Partial<StoreItem> | null
         </div>
         {err && <div style={{ color: '#CC4444', fontSize: '12px', marginTop: '12px' }}>{err}</div>}
         <div style={{ display: 'flex', gap: '8px', marginTop: '20px' }}>
-          <button onClick={save} disabled={loading} style={{ ...btnBase, background: '#3b82f6', color: 'white', flex: 1, padding: '10px' }}>
+          <button onClick={save} disabled={loading} style={{ ...btnBase, background: ACCENT, color: 'white', flex: 1, padding: '10px' }}>
             {loading ? 'SAVING…' : isNew ? 'CREATE ITEM' : 'SAVE CHANGES'}
           </button>
           <button onClick={onClose} style={{ ...btnBase, background: '#222', color: '#666' }}>CANCEL</button>
         </div>
       </div>
     </div>
-  )
-}
-
-// ── Inline Sale Form ───────────────────────────────────────────────────────────
-function SaleForm({ item, onCreated }: { item: StoreItem; onCreated: (s: Sale) => void }) {
-  const [discount, setDiscount] = useState('')
-  const [endsAt, setEndsAt] = useState('')
-  const [label, setLabel] = useState('')
-  const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [err, setErr] = useState('')
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault(); setErr(''); setLoading(true)
-    const res = await fetch('/api/admin/items/sales', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        item_id: item.id, item_type: 'store', item_name: item.name,
-        discount_percent: parseInt(discount), ends_at: new Date(endsAt).toISOString(),
-        label: label || null,
-      }),
-    })
-    const json = await res.json()
-    setLoading(false)
-    if (!res.ok || json.error) { setErr(json.error ?? 'Failed'); return }
-    onCreated(json)
-    setDiscount(''); setEndsAt(''); setLabel(''); setOpen(false)
-  }
-
-  if (!open) {
-    return (
-      <button onClick={() => setOpen(true)} style={{ ...btnBase, background: '#0D1520', color: '#3b82f6', border: '1px solid #3b82f620', fontSize: '10px', padding: '4px 8px' }}>
-        + SALE
-      </button>
-    )
-  }
-
-  return (
-    <form onSubmit={submit} style={{ marginTop: '8px', padding: '10px', background: '#0D1520', borderRadius: '6px', border: '1px solid #3b82f620' }}>
-      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div style={{ width: '60px' }}>
-          <label style={{ ...LABEL }}>% OFF</label>
-          <input type="number" min="1" max="99" required value={discount} onChange={e => setDiscount(e.target.value)} placeholder="20" style={{ ...inputStyle, background: '#111', padding: '5px 7px' }} />
-        </div>
-        <div>
-          <label style={{ ...LABEL }}>ENDS AT</label>
-          <input type="datetime-local" required value={endsAt} onChange={e => setEndsAt(e.target.value)} style={{ ...inputStyle, background: '#111', padding: '5px 7px' }} />
-        </div>
-        <div style={{ flex: 1, minWidth: '100px' }}>
-          <label style={{ ...LABEL }}>LABEL</label>
-          <input value={label} onChange={e => setLabel(e.target.value)} placeholder="Optional note" style={{ ...inputStyle, background: '#111', padding: '5px 7px' }} />
-        </div>
-        <button type="submit" disabled={loading} style={{ ...btnBase, background: '#3b82f6', color: 'white' }}>{loading ? '…' : 'SAVE'}</button>
-        <button type="button" onClick={() => setOpen(false)} style={{ ...btnBase, background: 'transparent', color: '#555' }}>✕</button>
-      </div>
-      {err && <div style={{ color: '#CC4444', fontSize: '11px', marginTop: '6px' }}>{err}</div>}
-    </form>
   )
 }
 
@@ -212,11 +139,11 @@ function Analytics({ items, purchases }: { items: StoreItem[]; purchases: Purcha
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px', marginBottom: '24px' }}>
         {[
-          { label: 'CATALOG ITEMS', value: items.length, color: '#3b82f6' },
+          { label: 'CATALOG ITEMS', value: items.length, color: ACCENT },
           { label: 'ACTIVE ITEMS', value: items.filter(i => i.active).length, color: '#00AA44' },
           { label: 'TRANSACTIONS', value: completed.length, color: '#f59e0b' },
           { label: 'TOTAL OC SPENT', value: totalOC.toLocaleString(), color: '#f59e0b' },
-          { label: 'AVG ORDER (OC)', value: completed.length > 0 ? Math.round(totalOC / completed.length) : 0, color: '#3b82f6' },
+          { label: 'AVG ORDER (OC)', value: completed.length > 0 ? Math.round(totalOC / completed.length) : 0, color: ACCENT },
         ].map(({ label, value, color }) => (
           <div key={label} style={{ background: '#1A1A1A', border: '1px solid #2A2A2A', borderTop: `3px solid ${color}`, borderRadius: '6px', padding: '12px' }}>
             <div style={{ fontFamily: 'Bebas Neue, sans-serif', fontSize: '24px', color, lineHeight: 1 }}>{value}</div>
@@ -233,7 +160,7 @@ function Analytics({ items, purchases }: { items: StoreItem[]; purchases: Purcha
               <span style={{ color: '#333', fontSize: '11px', width: '18px' }}>#{i + 1}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ color: 'white', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</div>
-                <div style={{ color: '#3b82f6', fontSize: '10px' }}>{stats.oc.toLocaleString()} OC total</div>
+                <div style={{ color: ACCENT, fontSize: '10px' }}>{stats.oc.toLocaleString()} OC total</div>
               </div>
               <span style={{ color: '#f59e0b', fontFamily: 'Bebas Neue, sans-serif', fontSize: '14px', flexShrink: 0 }}>{stats.count}×</span>
               <div style={{ width: '36px', height: '4px', background: '#2A2A2A', borderRadius: '2px', flexShrink: 0 }}>
@@ -273,7 +200,7 @@ function Analytics({ items, purchases }: { items: StoreItem[]; purchases: Purcha
                     <div style={{ color: 'white', fontSize: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.item_name}</div>
                     <div style={{ color: '#444', fontSize: '10px' }}>{p.category}</div>
                   </div>
-                  <span style={{ color: '#3b82f6', fontSize: '12px', fontFamily: 'Bebas Neue, sans-serif', flexShrink: 0 }}>{(p.amount_paid ?? 0) * (p.quantity ?? 1)} OC</span>
+                  <span style={{ color: ACCENT, fontSize: '12px', fontFamily: 'Bebas Neue, sans-serif', flexShrink: 0 }}>{(p.amount_paid ?? 0) * (p.quantity ?? 1)} OC</span>
                   <span style={{ color: '#333', fontSize: '11px', flexShrink: 0 }}>{p.created_at ? new Date(p.created_at).toLocaleDateString() : '—'}</span>
                 </div>
               ))}
@@ -331,7 +258,7 @@ function Catalog({ items: initial, sales, onSaleCreated }: { items: StoreItem[];
           <option value="all">All Categories</option>
           {OC_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <button onClick={() => setEditItem({})} style={{ ...btnBase, background: '#3b82f6', color: 'white' }}>+ NEW ITEM</button>
+        <button onClick={() => setEditItem({})} style={{ ...btnBase, background: ACCENT, color: 'white' }}>+ NEW ITEM</button>
         <span style={{ color: '#444', fontSize: '12px', marginLeft: 'auto' }}>{filtered.length} items</span>
       </div>
 
@@ -353,7 +280,7 @@ function Catalog({ items: initial, sales, onSaleCreated }: { items: StoreItem[];
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                     <span style={{ color: 'white', fontWeight: 700, fontSize: '13px' }}>{item.name}</span>
                     {discount > 0 && (
-                      <span style={{ background: '#0D1520', color: '#3b82f6', border: '1px solid #3b82f630', borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>
+                      <span style={{ background: '#0D1520', color: ACCENT, border: `1px solid ${ACCENT}30`, borderRadius: '3px', padding: '1px 5px', fontSize: '10px' }}>
                         {discount}% OFF
                       </span>
                     )}
@@ -364,7 +291,7 @@ function Catalog({ items: initial, sales, onSaleCreated }: { items: StoreItem[];
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   {salePrice !== null && <div style={{ color: '#444', fontSize: '11px', textDecoration: 'line-through' }}>{item.price} OC</div>}
-                  <div style={{ color: salePrice !== null ? '#3b82f6' : color, fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', lineHeight: 1 }}>
+                  <div style={{ color: salePrice !== null ? ACCENT : color, fontFamily: 'Bebas Neue, sans-serif', fontSize: '18px', lineHeight: 1 }}>
                     {salePrice ?? item.price} OC
                   </div>
                 </div>
@@ -381,92 +308,13 @@ function Catalog({ items: initial, sales, onSaleCreated }: { items: StoreItem[];
                 </button>
                 <button onClick={() => deleteItem(item)} style={{ ...btnBase, background: '#1F0D0D', color: '#883333', fontSize: '10px', padding: '4px 8px' }}>DEL</button>
                 <div style={{ marginLeft: 'auto' }}>
-                  <SaleForm item={item} onCreated={onSaleCreated} />
+                  <SaleForm item={item} itemType="store" accentColor={ACCENT} onCreated={onSaleCreated} />
                 </div>
               </div>
             </div>
           )
         })}
       </div>
-    </div>
-  )
-}
-
-// ── Sales Section ──────────────────────────────────────────────────────────────
-function SalesTab({ sales: initial }: { sales: Sale[] }) {
-  const [sales, setSales] = useState(initial)
-  const [showHistory, setShowHistory] = useState(false)
-  const [cancelling, setCancelling] = useState<string | null>(null)
-
-  async function cancel(id: string) {
-    setCancelling(id)
-    await fetch('/api/admin/items/sales', {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    setSales(prev => prev.map(s => s.id === id ? { ...s, ends_at: new Date().toISOString() } : s))
-    setCancelling(null)
-  }
-
-  const active = sales.filter(isActive)
-  const past = sales.filter(s => !isActive(s))
-
-  return (
-    <div>
-      {active.length === 0 && past.length === 0 && (
-        <div style={{ color: '#444', textAlign: 'center', padding: '40px', fontSize: '13px' }}>
-          No sales yet. Use the "+ SALE" button on any item in the Catalog tab.
-        </div>
-      )}
-      {active.length > 0 && (
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ color: '#3b82f6', fontSize: '11px', letterSpacing: '0.15em', fontWeight: 700, marginBottom: '10px' }}>ACTIVE SALES ({active.length})</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {active.map(s => (
-              <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#1A1A1A', border: '1px solid #2A2A2A', borderRadius: '6px', padding: '10px 14px' }}>
-                <span style={{ color: '#3b82f6', fontFamily: 'Bebas Neue, sans-serif', fontSize: '22px', minWidth: '48px' }}>{s.discount_percent}%</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: 'white', fontSize: '13px', fontWeight: 600 }}>{s.item_name}</div>
-                  {s.label && <div style={{ color: '#555', fontSize: '11px' }}>{s.label}</div>}
-                </div>
-                <div style={{ color: '#444', fontSize: '11px', textAlign: 'right', flexShrink: 0 }}>
-                  <div>{new Date(s.starts_at).toLocaleDateString()} →</div>
-                  <div>{new Date(s.ends_at).toLocaleDateString()}</div>
-                </div>
-                <span style={{ background: '#0D1520', color: '#3b82f6', border: '1px solid #3b82f630', borderRadius: '3px', padding: '1px 6px', fontSize: '10px', flexShrink: 0 }}>LIVE</span>
-                <button onClick={() => cancel(s.id)} disabled={cancelling === s.id} style={{ ...btnBase, background: '#2E0D0D', color: '#CC4444', padding: '4px 8px', flexShrink: 0 }}>
-                  {cancelling === s.id ? '…' : 'END'}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {past.length > 0 && (
-        <div>
-          <button onClick={() => setShowHistory(h => !h)} style={{ ...btnBase, background: 'transparent', color: '#444', border: '1px solid #2A2A2A', marginBottom: '10px' }}>
-            {showHistory ? '▾' : '▸'} HISTORY ({past.length})
-          </button>
-          {showHistory && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {past.map(s => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: '#111', border: '1px solid #1A1A1A', borderRadius: '6px', padding: '8px 14px', opacity: 0.5 }}>
-                  <span style={{ color: '#666', fontFamily: 'Bebas Neue, sans-serif', fontSize: '20px', minWidth: '48px' }}>{s.discount_percent}%</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ color: '#888', fontSize: '12px' }}>{s.item_name}</div>
-                    {s.label && <div style={{ color: '#444', fontSize: '11px' }}>{s.label}</div>}
-                  </div>
-                  <div style={{ color: '#333', fontSize: '11px', textAlign: 'right' }}>
-                    <div>{new Date(s.starts_at).toLocaleDateString()} →</div>
-                    <div>{new Date(s.ends_at).toLocaleDateString()}</div>
-                  </div>
-                  <span style={{ color: '#333', fontSize: '10px' }}>ENDED</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   )
 }
@@ -498,13 +346,13 @@ export default function PawnshopClient({
       <div style={{ display: 'flex', gap: '4px', marginBottom: '24px', borderBottom: '1px solid #2A2A2A' }}>
         {TAB_NAMES.map(t => (
           <button key={t} onClick={() => setTab(t)} style={{
-            ...btnBase, background: 'transparent', color: tab === t ? '#3b82f6' : '#444',
-            borderBottom: tab === t ? '2px solid #3b82f6' : '2px solid transparent',
+            ...btnBase, background: 'transparent', color: tab === t ? ACCENT : '#444',
+            borderBottom: tab === t ? `2px solid ${ACCENT}` : '2px solid transparent',
             borderRadius: 0, padding: '8px 16px', fontSize: '12px',
           }}>
             {t}
             {t === 'SALES' && sales.filter(isActive).length > 0 && (
-              <span style={{ marginLeft: '6px', background: '#0D1520', color: '#3b82f6', borderRadius: '10px', padding: '1px 6px', fontSize: '9px' }}>
+              <span style={{ marginLeft: '6px', background: '#0D1520', color: ACCENT, borderRadius: '10px', padding: '1px 6px', fontSize: '9px' }}>
                 {sales.filter(isActive).length}
               </span>
             )}
@@ -517,7 +365,7 @@ export default function PawnshopClient({
 
       {tab === 'ANALYTICS' && <Analytics items={initialItems} purchases={initialPurchases} />}
       {tab === 'CATALOG' && <Catalog items={initialItems} sales={sales} onSaleCreated={addSale} />}
-      {tab === 'SALES' && <SalesTab sales={sales} />}
+      {tab === 'SALES' && <SalesTab sales={sales} accentColor={ACCENT} />}
     </div>
   )
 }

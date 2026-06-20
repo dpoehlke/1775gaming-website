@@ -65,8 +65,20 @@ export default function CampaignsPage() {
     setSaving(true)
     const method = isNew ? 'POST' : 'PATCH'
     const url = isNew ? '/api/admin/data/campaigns?project=omniverse' : `/api/admin/data/campaigns/${(editing as Campaign).id}?project=omniverse`
-    await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editing) })
-    setEditing(null); await load(); setSaving(false)
+    try {
+      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(editing) })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setError(body.error ?? `Save failed (${res.status})`)
+        return
+      }
+      setEditing(null)
+      await load()
+    } catch {
+      setError('Network error — could not save campaign')
+    } finally {
+      setSaving(false)
+    }
   }
 
   async function del(id: string) {

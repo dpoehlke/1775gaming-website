@@ -88,20 +88,32 @@ function Metric({ label, value, sub }: { label: string; value: string | number; 
   )
 }
 
-// Group records by week (last 8 weeks)
+// Returns ISO week number (1-53) for a date.
+function isoWeek(d: Date): number {
+  const tmp = new Date(d.getTime())
+  tmp.setHours(0, 0, 0, 0)
+  tmp.setDate(tmp.getDate() + 3 - ((tmp.getDay() + 6) % 7))
+  const week1 = new Date(tmp.getFullYear(), 0, 4)
+  return 1 + Math.round(((tmp.getTime() - week1.getTime()) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7)
+}
+
+function weekKey(d: Date): string {
+  return `W${isoWeek(d)}/${d.getFullYear()}`
+}
+
+// Group records by ISO week (last 8 weeks)
 function groupByWeek(records: { created_at: string }[]) {
   const weeks: Record<string, number> = {}
   const now = Date.now()
   for (let i = 7; i >= 0; i--) {
     const d = new Date(now - i * 7 * 24 * 60 * 60 * 1000)
-    const key = `W${Math.ceil(d.getDate() / 7)}/${d.getMonth() + 1}`
-    weeks[key] = 0
+    weeks[weekKey(d)] = 0
   }
   records.forEach(r => {
     const d = new Date(r.created_at)
     const age = (now - d.getTime()) / (7 * 24 * 60 * 60 * 1000)
     if (age <= 8) {
-      const key = `W${Math.ceil(d.getDate() / 7)}/${d.getMonth() + 1}`
+      const key = weekKey(d)
       if (key in weeks) weeks[key]++
     }
   })
@@ -112,7 +124,7 @@ export default async function AnalyticsPage() {
   const [betaRes, newsRes, routesRes] = await Promise.all([
     supabaseAdmin.from('beta_signups').select('platform, age_range, heard_from, status, created_at'),
     supabaseAdmin.from('newsletter_subscribers').select('source, confirmed, created_at'),
-    supabaseAdmin.from('mission_routes').select('type, difficulty, is_active, created_at').limit(500),
+    supabaseAdmin.from('mission_routes').select('mission_type, difficulty, is_active, created_at').limit(500),
   ])
 
   const betas = betaRes.data ?? []
@@ -158,7 +170,7 @@ export default async function AnalyticsPage() {
   const missionTypes = ['patrol', 'mission', 'exploration', 'pvp']
   const missionSlices = missionTypes.map((t, i) => ({
     label: t.charAt(0).toUpperCase() + t.slice(1),
-    value: routes.filter(r => r.type === t).length,
+    value: routes.filter(r => r.mission_type === t).length,
     color: ['#CC0000', '#B8860B', '#00D4FF', '#00AA44'][i],
   }))
 

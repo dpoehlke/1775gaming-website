@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import type { Metadata } from 'next';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -17,8 +16,7 @@ interface Controls {
 
 type ViewState = 'login' | 'dashboard' | 'saved';
 
-// Replace this with your actual Supabase project URL once deployed.
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_OMNIVERSE_SUPABASE_URL ?? '';
 
 // ── Toggle row component ──────────────────────────────────────────────────────
 

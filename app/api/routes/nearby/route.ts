@@ -11,7 +11,7 @@
  */
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
-import { haversineDistance } from '@/lib/gpx-parser'
+import { haversineDistance } from '@/lib/haversine'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
