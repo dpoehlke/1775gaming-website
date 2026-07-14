@@ -8,7 +8,7 @@ import PlayersClient from './PlayersClient'
 export default async function PlayersPage() {
   const { data, error } = await omniverseAdmin
     .from('player_profiles')
-    .select('id, user_id, display_name, subscription_tier, caps_remaining, caps_daily_limit, omni_credits, victory_points, max_characters, whitelist_tier, whitelist_expires, is_banned, ban_reason, is_suspended, suspension_expires_at, super_group_id, created_at, updated_at')
+    .select('id, user_id, display_name, subscription_tier, caps_remaining, caps_daily_limit, omni_credits, character_points_bank, victory_points, max_characters, whitelist_tier, whitelist_expires, is_banned, ban_reason, is_suspended, suspension_expires_at, super_group_id, created_at, updated_at')
     .order('created_at', { ascending: false })
     .limit(500)
 

@@ -3,6 +3,11 @@
  * Moderation actions against a player profile (player_profiles.id).
  * Body: { action, value?, reason? }
  * Actions: suspend | unsuspend | ban | unban | set_tier | set_tier_timed
+ *          adjust_credits | adjust_character_points
+ *
+ * The adjust_* actions take a signed delta in `value` (e.g. "500", "-250"),
+ * clamp the result at zero, and record the change in audit_log. Omni credits
+ * and character points are player-level balances, not per-character.
  *
  * All mutations are direct table updates via the service-role client rather
  * than the superadmin_action RPC. The RPC's is_superadmin() check relies on
@@ -29,6 +34,50 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
   const { id: profileId } = await params
   let error: { message: string } | null = null
+
+  // Balance adjustments return the new balance, so they short-circuit the switch.
+  if (action === 'adjust_credits' || action === 'adjust_character_points') {
+    const column = action === 'adjust_credits' ? 'omni_credits' : 'character_points_bank'
+    const delta = Number(value)
+    if (!Number.isFinite(delta) || !Number.isInteger(delta) || delta === 0) {
+      return NextResponse.json({ error: 'Amount must be a non-zero whole number' }, { status: 400 })
+    }
+
+    const { data: profile, error: readErr } = await omniverseAdmin
+      .from('player_profiles')
+      .select(`id, ${column}`)
+      .eq('id', profileId)
+      .maybeSingle<Record<string, number>>()
+    if (readErr) return NextResponse.json({ error: readErr.message }, { status: 500 })
+    if (!profile) return NextResponse.json({ error: 'Player not found' }, { status: 404 })
+
+    const before = profile[column] ?? 0
+    const after = Math.max(0, before + delta)
+
+    const { error: writeErr } = await omniverseAdmin
+      .from('player_profiles')
+      .update({ [column]: after })
+      .eq('id', profileId)
+    if (writeErr) return NextResponse.json({ error: writeErr.message }, { status: 500 })
+
+    await omniverseAdmin.from('audit_log').insert({
+      action,
+      target_type: 'player_profile',
+      target_id: profileId,
+      payload: {
+        field: column,
+        delta,
+        balance_before: before,
+        balance_after: after,
+        // Set when the requested debit exceeded the balance and was floored at 0.
+        clamped: before + delta < 0,
+        reason: reason ?? null,
+        via: 'admin_players_page',
+      },
+    })
+
+    return NextResponse.json({ ok: true, field: column, before, after })
+  }
 
   switch (action) {
     case 'suspend': {
