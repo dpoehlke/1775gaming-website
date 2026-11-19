@@ -25,19 +25,28 @@ type Game = {
 }
 type Entitlement = { game_id: string; source: string }
 type Membership = { status: string; tier: string | null; current_period_end: string | null }
+type Perk = { key: string; name: string; description: string | null }
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ membership?: string }>
+}) {
+  const membershipParam = (await searchParams)?.membership
+  const justSubscribed = membershipParam === 'success'
+  const membershipError = membershipParam === 'error'
   const supabase = await createSupabaseServerClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/account/login')
 
-  const [profileRes, gamesRes, entRes, memRes] = await Promise.all([
+  const [profileRes, gamesRes, entRes, memRes, perksRes] = await Promise.all([
     supabase.from('profiles').select('display_name, username, avatar_url').eq('id', user.id).maybeSingle(),
     supabase.from('games').select('*').order('sort'),
     supabase.from('entitlements').select('game_id, source'),
     supabase.from('memberships').select('status, tier, current_period_end').eq('user_id', user.id).maybeSingle(),
+    supabase.from('perks').select('key, name, description').order('name'),
   ])
 
   const name =
@@ -48,6 +57,10 @@ export default async function AccountPage() {
   const owned = new Set(((entRes.data ?? []) as Entitlement[]).map((e) => e.game_id))
   const membership = memRes.data as Membership | null
   const isMember = membership?.status === 'active' || membership?.status === 'trialing'
+  const perks = (perksRes.data ?? []) as Perk[]
+  const periodLabel = membership?.current_period_end
+    ? new Date(membership.current_period_end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    : ''
 
   return (
     <main className="min-h-screen bg-[#0D0D0D] text-[#E8E8E8]">
@@ -70,34 +83,61 @@ export default async function AccountPage() {
       </header>
 
       <div className="mx-auto max-w-5xl px-5 py-8">
-        {/* membership banner */}
+        {justSubscribed && (
+          <div className="rounded-xl border border-[#2A6A3A] bg-[#12210F] text-[#8AD64F] p-4 mb-4 text-sm">
+            You&apos;re in — welcome to 1775 membership. Your perks are now active across every game.
+          </div>
+        )}
+        {membershipError && (
+          <div className="rounded-xl border border-[#6A2A2A] bg-[#210F0F] text-[#e2574a] p-4 mb-4 text-sm">
+            Something went wrong starting membership. If this keeps happening, billing may not be set up yet.
+          </div>
+        )}
+
+        {/* membership */}
         <section
-          className={`rounded-xl border p-4 mb-8 flex items-center gap-4 flex-wrap ${
+          className={`rounded-xl border p-5 mb-8 ${
             isMember ? 'border-[#B8860B] bg-[#1C160A]' : 'border-[#2A2A2A] bg-[#141414]'
           }`}
         >
-          <div className="flex-1 min-w-[12rem]">
-            <div className="font-semibold text-white">
-              {isMember ? `1775 Member — ${membership?.tier ?? 'founder'}` : '1775 Membership'}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex-1 min-w-[12rem]">
+              <div className="font-semibold text-white">
+                {isMember ? `1775 Member — ${membership?.tier ?? 'founder'}` : '1775 Membership'}
+              </div>
+              <div className="text-sm text-[#9A9A9A]">
+                {isMember
+                  ? `Perks active across every 1775 game${periodLabel ? ` · renews ${periodLabel}` : ''}.`
+                  : 'One subscription, perks in every 1775 game.'}
+              </div>
             </div>
-            <div className="text-sm text-[#9A9A9A]">
-              {isMember
-                ? 'Your perks are active across every 1775 game.'
-                : 'One subscription, perks in every 1775 game. Coming soon.'}
-            </div>
+            {isMember ? (
+              <form action="/api/membership/portal" method="post">
+                <button className="text-sm rounded-lg border border-[#B8860B] text-[#E8B84B] font-semibold px-4 py-2 hover:bg-[#241B0A] transition">
+                  Manage membership
+                </button>
+              </form>
+            ) : (
+              <form action="/api/membership/checkout" method="post">
+                <button className="text-sm rounded-lg bg-[#B8860B] text-black font-semibold px-4 py-2 hover:bg-[#d49f14] transition">
+                  Become a member
+                </button>
+              </form>
+            )}
           </div>
-          {isMember ? (
-            <span className="text-xs font-semibold text-[#E8B84B] border border-[#B8860B] rounded-full px-3 py-1">
-              ACTIVE
-            </span>
-          ) : (
-            <button
-              disabled
-              className="text-sm rounded-lg bg-[#2A2A2A] text-[#8A8A8A] font-semibold px-4 py-2 cursor-not-allowed"
-              title="Membership billing arrives in the next phase"
-            >
-              Become a member
-            </button>
+
+          {perks.length > 0 && (
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {perks.map((p) => (
+                <li key={p.key} className="flex items-start gap-2 text-sm">
+                  <span className={isMember ? 'text-[#8AD64F]' : 'text-[#6A6A6A]'}>{isMember ? '✓' : '○'}</span>
+                  <span>
+                    <span className="text-[#E8E8E8]">{p.name}</span>
+                    {p.description && <span className="text-[#7A7A7A]"> — {p.description}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
         </section>
 
