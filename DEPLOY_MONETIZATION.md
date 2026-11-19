@@ -92,12 +92,18 @@ REVENUECAT_MEMBERSHIP_ENTITLEMENT=
 
 ---
 
-## Decisions still open (tell me and I'll build to them)
+## Decisions — LOCKED 2026-11-19
 
-1. **How far to take OMNIVERSE now** — just the membership bridge (above), or the fuller account
-   merge (move OMNIVERSE players onto the central 1775 account).
-2. **Does FRACTURE need its own storefront**, or is it free + membership-perks for launch?
-3. **What the membership includes** — perks only (current), or also unlocking specific paid games.
-4. **Price(s)** for the 1775 membership (and any game items).
+The monetization model is decided. Full spec in **`MONETIZATION_MODEL.md`**. In short:
+- **OMNIVERSE = full account merge** (central 1775 login).
+- **Game classes:** basic games (in the membership) vs **premium games — OMNIVERSE + Desolation —
+  with their own separate subscriptions**.
+- **Membership, two tiers (both rails):** **Basic $4.99/mo** = 3 basic games of choice (change
+  1×/30 days) + basic perks + discounts; **All-Access $9.99/mo** = all basic games + perks in all
+  games + discounts. Annual discount on both.
+- **FRACTURE** (free basic game): membership unlocks multiplayer + ranked.
+- **Perks + discounts** on in-game purchases.
+
+(A few pricing/perk assumptions are flagged in `MONETIZATION_MODEL.md` for final confirm.)
 
 Nothing here is deployed; the whole thing waits on the single sequence above.
