@@ -1,13 +1,14 @@
 # OMNIVERSE × 1775 — full account merge (blueprint)
 
-**Status: planned, not built.** OMNIVERSE is pre-launch and its backend is flexible, so it joins the
-central 1775 identity directly (the real merge, not a cautious link). **Its subscription product is
-unchanged** — the four tiers (Starter / Hero / Legend / Founder, monthly + annual) and all the
-consumable IAPs stay exactly as designed. Only the *identity plumbing* changes.
+**Status: BUILT 2026-11-20** — `omniverse-ascension` branch `feat/equipment-pawnshop-auction`, commits
+`49fae80` (account-merge) + `d60747b` (member-perks read); not pushed/deployed; tsc clean, jest 42/42.
+OMNIVERSE is pre-launch, so it joins the central 1775 identity directly (the real merge, not a cautious
+link). **Its subscription product is unchanged** — the four tiers (Starter / Hero / Legend / Founder,
+monthly + annual) and all the consumable IAPs stay exactly as designed. Only the *identity plumbing*
+changed. Go-live steps: `DEPLOY_MONETIZATION.md` step 7.
 
-> Sequencing note: the `omniverse-ascension` repo is mid-refactor (a `mnm3e → oas` rename) with a
-> parallel session active. The app/schema edits below should land **when that tree is clear** so we
-> don't collide with in-flight work.
+> Done: the `mnm3e → oas` rename that was in flight is committed and clean (tsc 0, jest 42/42), and the
+> merge below is built on top of it. The inline tags show what each change became in code.
 
 ## Existing OMNIVERSE subscriptions (preserve as-is)
 
@@ -38,7 +39,7 @@ OMNIVERSE's `process-purchase` webhook → its own `player_profiles`. **None of 
 - OMNIVERSE **reads the central membership** (same central id) to apply 1775 member **perks +
   discounts** in its store.
 
-## Changes (all as code; switched on at the single deployment)
+## Changes (all BUILT as code; switched on at the single deployment)
 
 ### OMNIVERSE app (`omniverse-ascension`)
 1. **Auth → central project.** Add a central-auth Supabase client (`EXPO_PUBLIC_PLATFORM_SUPABASE_URL`
