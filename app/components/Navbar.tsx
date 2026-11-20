@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -17,12 +18,24 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const account = signedIn
+    ? { href: "/account", label: "Your Games" }
+    : { href: "/account/login", label: "Sign In" };
 
   return (
     <nav
@@ -70,6 +83,12 @@ export default function Navbar() {
           {/* Right: JOIN BETA + Hamburger */}
           <div className="flex items-center space-x-4">
             <Link
+              href={account.href}
+              className="hidden md:inline-flex items-center px-4 py-2 font-body text-sm font-semibold uppercase tracking-wider text-gold border border-gold hover:bg-gold/10 transition-colors duration-200"
+            >
+              {account.label}
+            </Link>
+            <Link
               href="/beta"
               className="hidden md:inline-flex items-center px-5 py-2 font-body text-sm font-semibold uppercase tracking-wider text-white bg-scarlet border border-gold hover:bg-scarlet/80 transition-colors duration-200"
             >
@@ -113,7 +132,14 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <div className="pt-3">
+          <div className="pt-3 space-y-2">
+            <Link
+              href={account.href}
+              className="block text-center font-body text-sm font-semibold uppercase tracking-wider text-gold border border-gold px-4 py-3 hover:bg-gold/10 transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {account.label}
+            </Link>
             <Link
               href="/beta"
               className="block text-center font-body text-sm font-semibold uppercase tracking-wider text-white bg-scarlet border border-gold px-4 py-3 hover:bg-scarlet/80 transition-colors duration-200"
