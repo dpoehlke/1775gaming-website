@@ -1,17 +1,19 @@
 /**
- * POST /api/membership/checkout — start a Stripe Checkout session for the 1775 membership.
- * The /account "Become a member" button posts here; we redirect the player to Stripe Checkout.
+ * POST /api/membership/checkout — start a Stripe Checkout session for a chosen membership plan.
+ * The /account plan buttons post `plan` (basic_monthly | basic_annual | allaccess_monthly |
+ * allaccess_annual); we look up its Stripe price and tag the subscription with its tier.
  */
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { getStripe } from '@/lib/stripe'
+import { PLANS, isPlanKey, planPriceId } from '@/lib/billing-plans'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.1775gaming.com'
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const supabase = await createSupabaseServerClient()
   const {
     data: { user },
@@ -19,10 +21,13 @@ export async function POST() {
   if (!user) return NextResponse.redirect(new URL('/account/login', SITE_URL), { status: 303 })
 
   try {
-    const price = process.env.STRIPE_MEMBERSHIP_PRICE_ID
-    if (!price) throw new Error('STRIPE_MEMBERSHIP_PRICE_ID is not configured')
+    const form = await req.formData()
+    const planKey = form.get('plan')
+    if (!isPlanKey(planKey)) throw new Error('invalid plan')
+    const plan = PLANS[planKey]
+    const price = planPriceId(plan)
+    if (!price) throw new Error(`${plan.priceEnv} is not configured`)
 
-    // Reuse an existing Stripe customer if this player already has one.
     const { data: membership } = await supabase
       .from('memberships')
       .select('provider_customer_id')
@@ -34,7 +39,7 @@ export async function POST() {
       mode: 'subscription',
       line_items: [{ price, quantity: 1 }],
       client_reference_id: user.id,
-      subscription_data: { metadata: { userId: user.id } },
+      subscription_data: { metadata: { userId: user.id, tier: plan.tier } },
       ...(customerId ? { customer: customerId } : { customer_email: user.email ?? undefined }),
       allow_promotion_codes: true,
       success_url: `${SITE_URL}/account?membership=success`,

@@ -1,16 +1,15 @@
 /**
- * RevenueCat → central 1775 membership mapping (the MOBILE rail).
+ * RevenueCat → central platform mapping (the MOBILE rail).
  *
- * RevenueCat (App Store / Google Play) sends subscription events to /api/revenuecat/webhook, which
- * maps them through the SAME setMembership() path as Stripe — so a membership bought on mobile grants
- * the same cross-game perks as one bought on the web, and vice-versa.
+ * Routes a RevenueCat (App Store / Google Play) event to the right place by its entitlement:
+ *   - the Basic / All-Access membership entitlements → the central 1775 membership (with tier)
+ *   - a premium game's entitlement (OMNIVERSE, Desolation) → that game's game_subscriptions row
+ * Everything flows through the same setMembership()/setGameSubscription() paths as Stripe.
  *
- * Contract: the RevenueCat `app_user_id` MUST be the player's central 1775 account id (the mobile
- * app sets this when it configures RevenueCat). Events are filtered to the 1775 membership
- * entitlement so a game's OWN in-app purchases (e.g. OMNIVERSE tier upgrades) never flip the
- * cross-game membership.
+ * Contract: the RevenueCat `app_user_id` MUST be the player's central 1775 account id.
  */
-import type { MembershipSource, MembershipStatus, MembershipWrite } from './membership'
+import type { MembershipSource, MembershipStatus } from './membership'
+import type { MembershipTier } from './billing-plans'
 
 export interface RevenueCatEvent {
   type?: string
@@ -23,6 +22,56 @@ export interface RevenueCatEvent {
   entitlement_ids?: string[] | null
 }
 
+export interface RcRoutingConfig {
+  basicEntitlement?: string
+  allAccessEntitlement?: string
+  premiumEntitlements: Record<string, string> // entitlement id -> game slug
+}
+
+/** Build routing from env: REVENUECAT_BASIC_ENTITLEMENT, REVENUECAT_ALLACCESS_ENTITLEMENT,
+ *  REVENUECAT_PREMIUM_ENTITLEMENTS="entId:gameSlug,entId2:gameSlug2". */
+export function rcRoutingFromEnv(): RcRoutingConfig {
+  const premium: Record<string, string> = {}
+  for (const pair of (process.env.REVENUECAT_PREMIUM_ENTITLEMENTS ?? '').split(',').map((s) => s.trim()).filter(Boolean)) {
+    const [ent, slug] = pair.split(':').map((s) => s.trim())
+    if (ent && slug) premium[ent] = slug
+  }
+  return {
+    basicEntitlement: process.env.REVENUECAT_BASIC_ENTITLEMENT || undefined,
+    allAccessEntitlement: process.env.REVENUECAT_ALLACCESS_ENTITLEMENT || undefined,
+    premiumEntitlements: premium,
+  }
+}
+
+export interface RcMapped {
+  target: { kind: 'membership'; tier: MembershipTier } | { kind: 'game'; slug: string }
+  userId: string
+  status: MembershipStatus
+  source: MembershipSource
+  currentPeriodEnd: string | null
+  providerCustomerId: string | null
+  providerSubscriptionId: string | null
+}
+
+function rcStatus(type?: string): MembershipStatus | null {
+  switch (type) {
+    case 'INITIAL_PURCHASE':
+    case 'RENEWAL':
+    case 'UNCANCELLATION':
+    case 'PRODUCT_CHANGE':
+    case 'NON_RENEWING_PURCHASE':
+    case 'CANCELLATION': // auto-renew off — still active until expiration
+      return 'active'
+    case 'BILLING_ISSUE':
+      return 'past_due'
+    case 'EXPIRATION':
+    case 'SUBSCRIPTION_PAUSED':
+      return 'canceled'
+    default:
+      return null // TRANSFER / TEST / etc.
+  }
+}
+
 export function rcSourceFromStore(store?: string): MembershipSource {
   if (store === 'APP_STORE' || store === 'MAC_APP_STORE') return 'apple'
   if (store === 'PLAY_STORE') return 'google'
@@ -30,48 +79,29 @@ export function rcSourceFromStore(store?: string): MembershipSource {
   return 'manual'
 }
 
-/**
- * Map a RevenueCat event to a membership write, or null to ignore it (wrong entitlement, or an
- * event type that doesn't change membership state). `membershipEntitlement` is the RevenueCat
- * entitlement id that represents the 1775 membership (REVENUECAT_MEMBERSHIP_ENTITLEMENT).
- */
-export function rcEventToMembership(
-  ev: RevenueCatEvent,
-  membershipEntitlement?: string,
-): MembershipWrite | null {
+/** Map an event to a routed subscription write, or null to ignore (unknown entitlement / event type). */
+export function mapRcEvent(ev: RevenueCatEvent, cfg: RcRoutingConfig): RcMapped | null {
   const userId = ev.app_user_id
   if (!userId) return null
+  const status = rcStatus(ev.type)
+  if (!status) return null
 
-  // Only the 1775 membership entitlement moves the cross-game membership.
-  if (membershipEntitlement) {
-    const ents = ev.entitlement_ids ?? (ev.entitlement_id ? [ev.entitlement_id] : [])
-    if (!ents.includes(membershipEntitlement)) return null
-  }
+  const ents = ev.entitlement_ids ?? (ev.entitlement_id ? [ev.entitlement_id] : [])
 
-  let status: MembershipStatus
-  switch (ev.type) {
-    case 'INITIAL_PURCHASE':
-    case 'RENEWAL':
-    case 'UNCANCELLATION':
-    case 'PRODUCT_CHANGE':
-    case 'NON_RENEWING_PURCHASE':
-      status = 'active'
-      break
-    case 'CANCELLATION': // auto-renew turned off — still active until it expires
-      status = 'active'
-      break
-    case 'BILLING_ISSUE':
-      status = 'past_due'
-      break
-    case 'EXPIRATION':
-    case 'SUBSCRIPTION_PAUSED':
-      status = 'canceled'
-      break
-    default:
-      return null // TRANSFER / TEST / etc. — don't touch membership state
+  let target: RcMapped['target'] | null = null
+  if (cfg.allAccessEntitlement && ents.includes(cfg.allAccessEntitlement)) {
+    target = { kind: 'membership', tier: 'all_access' }
+  } else if (cfg.basicEntitlement && ents.includes(cfg.basicEntitlement)) {
+    target = { kind: 'membership', tier: 'basic' }
+  } else {
+    for (const [ent, slug] of Object.entries(cfg.premiumEntitlements)) {
+      if (ents.includes(ent)) { target = { kind: 'game', slug }; break }
+    }
   }
+  if (!target) return null
 
   return {
+    target,
     userId,
     status,
     source: rcSourceFromStore(ev.store),

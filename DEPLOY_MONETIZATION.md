@@ -32,8 +32,10 @@ either rail (Stripe web or RevenueCat mobile) writes the same `memberships` row*
 Do these **once**, in this order. Steps 1–6 are the hub; 7 is OMNIVERSE; 8 verifies.
 
 1. **Upgrade Supabase** (the *website* project) to the paid plan. *(This is the spend.)*
-2. **Apply the platform schema** — `SETUP_PLATFORM.md` step 1 (paste `supabase/migrations/0001_platform_accounts.sql`).
-   *(If you'd rather not paste SQL, I can apply it for you through the connected Supabase.)*
+2. **Apply the schema** — run **both** migrations in order in the Supabase SQL editor:
+   `supabase/migrations/0001_platform_accounts.sql`, then `0002_monetization_tiers.sql`
+   (tiers, the pick-3, premium-game subs, the access helper).
+   *(If you'd rather not paste SQL, I can apply them for you through the connected Supabase.)*
 3. **Enable sign-in** — Google + Email now, Apple when ready; add the `/account/callback` redirect
    (`SETUP_PLATFORM.md` steps 2–3).
 4. **Stripe (web rail)** — product + keys + webhook (`SETUP_MEMBERSHIP.md`). Start in **Test mode**.

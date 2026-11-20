@@ -1,14 +1,13 @@
 /**
- * POST /api/revenuecat/webhook — RevenueCat (App Store / Google Play) subscription events →
- * the central 1775 membership, through the shared setMembership() path (same as Stripe).
+ * POST /api/revenuecat/webhook — RevenueCat (App Store / Google Play) events → the central platform.
  *
- * Auth: RevenueCat sends the Authorization header you configure in its dashboard; it must equal
- * REVENUECAT_WEBHOOK_AUTH. Only events for REVENUECAT_MEMBERSHIP_ENTITLEMENT affect membership.
- * The RevenueCat app_user_id must be the player's central 1775 account id (set by the mobile app).
+ * Routes by entitlement: the membership entitlements → the 1775 membership (with tier); a premium
+ * game's entitlement → that game's game_subscriptions row. Same write paths as Stripe.
+ * Auth: the Authorization header must equal REVENUECAT_WEBHOOK_AUTH. app_user_id = central 1775 id.
  */
 import { NextRequest, NextResponse } from 'next/server'
-import { setMembership } from '@/lib/membership'
-import { rcEventToMembership, type RevenueCatEvent } from '@/lib/revenuecat'
+import { setGameSubscription, setMembership } from '@/lib/membership'
+import { mapRcEvent, rcRoutingFromEnv, type RevenueCatEvent } from '@/lib/revenuecat'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -30,8 +29,30 @@ export async function POST(req: NextRequest) {
   if (!event) return NextResponse.json({ ignored: 'no event' })
 
   try {
-    const membership = rcEventToMembership(event, process.env.REVENUECAT_MEMBERSHIP_ENTITLEMENT)
-    if (membership) await setMembership(membership)
+    const m = mapRcEvent(event, rcRoutingFromEnv())
+    if (m) {
+      if (m.target.kind === 'membership') {
+        await setMembership({
+          userId: m.userId,
+          status: m.status,
+          source: m.source,
+          tier: m.target.tier,
+          currentPeriodEnd: m.currentPeriodEnd,
+          providerCustomerId: m.providerCustomerId,
+          providerSubscriptionId: m.providerSubscriptionId,
+        })
+      } else {
+        await setGameSubscription({
+          userId: m.userId,
+          gameSlug: m.target.slug,
+          status: m.status,
+          source: m.source,
+          currentPeriodEnd: m.currentPeriodEnd,
+          providerCustomerId: m.providerCustomerId,
+          providerSubscriptionId: m.providerSubscriptionId,
+        })
+      }
+    }
   } catch (e) {
     console.error('[revenuecat webhook] handler error', e)
     return new NextResponse('handler error', { status: 500 })

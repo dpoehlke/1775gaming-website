@@ -10,15 +10,18 @@ it for you. Use **Test mode** in Stripe until you're ready to go live.
 
 ---
 
-## 1. Make a Stripe account + the membership product (~10 min)
+## 1. Make the Stripe products (~10 min, Test mode)
 
-1. Go to **stripe.com**, sign up / sign in. Toggle **Test mode** on (top-right).
-2. Left menu → **Product catalog** → **+ Add product**.
-   - Name: `1775 Membership`
-   - Pricing: **Recurring**, pick a price (e.g. `$4.99` / **month**).
-   - Save.
-3. On the product, find the **Price** → copy its **Price ID** (looks like `price_1A2b3C...`). You'll
-   paste it as `STRIPE_MEMBERSHIP_PRICE_ID`.
+1. Go to **stripe.com**, sign in, toggle **Test mode** on (top-right).
+2. Create **two products** (Product catalog → + Add product), each **Recurring**, each with a
+   **monthly and an annual** price:
+   - **1775 Basic** — **$4.99/month** and **$49/year**
+   - **1775 All-Access** — **$9.99/month** and **$99/year**
+3. Copy each **Price ID** (`price_...`) — you'll have four, for these env vars:
+   - Basic monthly → `STRIPE_PRICE_BASIC_MONTHLY`
+   - Basic annual → `STRIPE_PRICE_BASIC_ANNUAL`
+   - All-Access monthly → `STRIPE_PRICE_ALLACCESS_MONTHLY`
+   - All-Access annual → `STRIPE_PRICE_ALLACCESS_ANNUAL`
 
 ## 2. Copy your API keys
 
@@ -49,7 +52,10 @@ Put these three in **Vercel → your project → Settings → Environment Variab
 ```
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_MEMBERSHIP_PRICE_ID=price_...
+STRIPE_PRICE_BASIC_MONTHLY=price_...
+STRIPE_PRICE_BASIC_ANNUAL=price_...
+STRIPE_PRICE_ALLACCESS_MONTHLY=price_...
+STRIPE_PRICE_ALLACCESS_ANNUAL=price_...
 ```
 
 Redeploy after adding them on Vercel.
