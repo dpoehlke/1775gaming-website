@@ -9,6 +9,9 @@
  */
 import { omniverseAdmin } from '@/lib/supabase-omniverse'
 
+// Live admin data from the OMNIVERSE project — render per request, never prerender.
+export const dynamic = 'force-dynamic'
+
 const DIFF_COLORS: Record<string, string> = {
   civic: '#888', street: '#00D4FF', villain: '#B8860B', crisis: '#CC0000', alien: '#8844CC',
 }

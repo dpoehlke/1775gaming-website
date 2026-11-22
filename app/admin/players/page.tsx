@@ -5,6 +5,9 @@
 import { omniverseAdmin } from '@/lib/supabase-omniverse'
 import PlayersClient from './PlayersClient'
 
+// Live admin data from the OMNIVERSE project — render per request, never prerender.
+export const dynamic = 'force-dynamic'
+
 export default async function PlayersPage() {
   const { data, error } = await omniverseAdmin
     .from('player_profiles')

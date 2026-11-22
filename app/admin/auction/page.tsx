@@ -4,6 +4,9 @@
 import { omniverseAdmin } from '@/lib/supabase-omniverse'
 import AuctionClient from './AuctionClient'
 
+// Live admin data from the OMNIVERSE project — render per request, never prerender.
+export const dynamic = 'force-dynamic'
+
 export default async function AuctionPage() {
   const [luxItemsRes, luxPurchRes, auctionRes, salesRes] = await Promise.all([
     omniverseAdmin.from('nothebys_items').select('*').order('sort_order'),

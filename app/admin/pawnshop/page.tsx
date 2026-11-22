@@ -4,6 +4,9 @@
 import { omniverseAdmin } from '@/lib/supabase-omniverse'
 import PawnshopClient from './PawnshopClient'
 
+// Live admin data from the OMNIVERSE project — render per request, never prerender.
+export const dynamic = 'force-dynamic'
+
 export default async function PawnShopPage() {
   const [itemsRes, txRes, salesRes] = await Promise.all([
     omniverseAdmin
