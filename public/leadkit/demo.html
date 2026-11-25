@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Live demo · After-Hours Lead Kit</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#0D0D0D;--gold:#C9A84C;--scarlet:#DC143C;--paper:#f6f5f1}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'IBM Plex Sans',Arial,sans-serif;color:#1a1a1a;background:var(--paper)}
+  .ribbon{background:var(--black);color:#fff;padding:10px 16px;font-size:14px;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;text-align:center}
+  .ribbon b{color:var(--gold)}
+  .mock{max-width:1040px;margin:28px auto;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.08);overflow:hidden}
+  .nav{display:flex;justify-content:space-between;align-items:center;padding:18px 28px;border-bottom:1px solid #eee}
+  .logo{font-family:'Bebas Neue',Arial,sans-serif;font-size:28px;letter-spacing:.5px}
+  .nav span{font-weight:600}
+  .hero{padding:64px 28px;background:linear-gradient(135deg,#1c1c1c,#2e2e2e);color:#fff}
+  .hero h1{font-family:'Bebas Neue',Arial,sans-serif;font-size:56px;line-height:1;margin:0 0 12px;letter-spacing:.5px}
+  .hero p{max-width:560px;font-size:18px;color:#ddd;margin:0 0 24px}
+  .cta{display:inline-block;background:var(--gold);color:var(--black);padding:12px 20px;border-radius:6px;font-weight:600;text-decoration:none}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;padding:28px}
+  .card{border:1px solid #eee;border-radius:8px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .card p{margin:0;color:#555;font-size:14px}
+  .callout{margin:0 28px 28px;padding:16px 18px;border-left:4px solid var(--scarlet);background:#fff6f7;font-size:15px}
+  footer{max-width:1040px;margin:0 auto 40px;padding:0 8px;color:#777;font-size:13px;text-align:center}
+  .err{max-width:600px;margin:80px auto;text-align:center}
+</style>
+</head>
+<body>
+<div class="ribbon"><span><b>LIVE DEMO</b> · This is a mock of <span id="bizName">your</span> website with the After-Hours Lead Kit installed.</span><span>Try the chat button in the bottom-right corner →</span></div>
+
+<div class="mock" id="mock" hidden>
+  <div class="nav"><div class="logo" id="logo"></div><span id="phone"></span></div>
+  <div class="hero">
+    <h1 id="headline"></h1>
+    <p>It's 9:47 PM. Your office is closed. A homeowner is on your website right now deciding who to call. This chat answers them, gets their name and number, and emails it to you in seconds.</p>
+    <a class="cta" href="#" id="openChat">Try it: ask about a repair</a>
+  </div>
+  <div class="grid">
+    <div class="card"><h3>Answers instantly, 24/7</h3><p>Uses only the facts you approve. No made-up prices, no promised arrival times.</p></div>
+    <div class="card"><h3>Captures the lead</h3><p>Name, phone or email, what they need, how urgent. Emailed to you the moment it's complete.</p></div>
+    <div class="card"><h3>Flags emergencies</h3><p>Gas smell or CO alarm? It tells them to get safe and call 911 first, then marks the lead URGENT.</p></div>
+    <div class="card"><h3>Monday brief</h3><p>Every Monday: chats, after-hours leads, who still needs a call back, and three moves for the week.</p></div>
+  </div>
+  <div class="callout"><b>Try these:</b> “My furnace quit and it's 40 degrees inside.” · “Do you do free estimates on a new AC?” · “I smell gas near my water heater.”</div>
+</div>
+
+<div class="err" id="err" hidden><h2>Demo not found</h2><p>Check the link, or contact 1775 Gaming LLC.</p></div>
+
+<footer>After-Hours Lead Kit · a product of 1775 Gaming LLC · Kansas City area · Marine Corps veteran-owned</footer>
+
+<script>
+(function(){
+  var API = 'https://ksizqvecclwvevfzdjnb.supabase.co/functions/v1/lk-widget';
+  var c = new URLSearchParams(location.search).get('c') || 'summit-ridge-demo';
+  if (!/^[a-z0-9-]{3,48}$/.test(c)) { document.getElementById('err').hidden = false; return; }
+  fetch(API + '?format=json&c=' + encodeURIComponent(c)).then(function(r){ return r.json(); }).then(function(cfg){
+    if (!cfg || !cfg.name) throw new Error('missing');
+    document.title = cfg.name + ' · Live demo';
+    document.getElementById('bizName').textContent = cfg.name + "'s";
+    document.getElementById('logo').textContent = cfg.name;
+    document.getElementById('phone').textContent = cfg.phone || '';
+    document.getElementById('headline').textContent = 'Never miss a ' + cfg.name.split(' ')[0] + ' customer again';
+    document.getElementById('mock').hidden = false;
+    var s = document.createElement('script'); s.src = API + '?c=' + encodeURIComponent(c); s.async = true; document.body.appendChild(s);
+    document.getElementById('openChat').onclick = function(e){ e.preventDefault(); var b = document.querySelector('.lk-btn'); if (b) b.click(); };
+  }).catch(function(){ document.getElementById('err').hidden = false; });
+})();
+</script>
+</body>
+</html>

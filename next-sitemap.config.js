@@ -7,7 +7,7 @@ module.exports = {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/'],
+        disallow: ['/api/', '/leadkit/'],
       },
     ],
   },

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Console · After-Hours Lead Kit</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#0D0D0D;--gold:#C9A84C;--scarlet:#DC143C;--paper:#f6f5f1;--line:#e6e4de}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'IBM Plex Sans',Arial,sans-serif;background:var(--paper);color:#1a1a1a}
+  header{background:var(--black);color:#fff;padding:16px 18px}
+  header h1{font-family:'Bebas Neue',Arial,sans-serif;font-size:30px;margin:0;letter-spacing:.5px}
+  header small{color:var(--gold);font-weight:600}
+  main{max-width:720px;margin:0 auto;padding:16px}
+  section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+  h2{font-size:18px;margin:0 0 4px}
+  .sub{color:#666;font-size:14px;margin:0 0 12px}
+  label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+  input,textarea,select{width:100%;padding:11px;border:1px solid #ccc;border-radius:6px;font:16px 'IBM Plex Sans',Arial,sans-serif}
+  textarea{min-height:110px;resize:vertical}
+  button{background:var(--black);color:#fff;border:none;border-radius:6px;padding:12px 16px;font:600 15px 'IBM Plex Sans',Arial,sans-serif;cursor:pointer;margin-top:12px;width:100%}
+  button.ghost{background:#fff;color:var(--black);border:1px solid var(--black)}
+  button:disabled{opacity:.5}
+  .msg{margin-top:10px;font-size:14px;min-height:1em}
+  .ok{color:#1b7a3d}.bad{color:var(--scarlet)}
+  .draft{white-space:pre-wrap;background:#faf8f2;border:1px solid var(--line);border-radius:6px;padding:12px;margin-top:12px}
+  .lead{border-top:1px solid var(--line);padding:10px 0;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+  .lead:first-child{border-top:none}
+  .lead b{display:block}.lead span{color:#555;font-size:14px}
+  .lead select{width:auto;padding:6px;font-size:14px}
+  .urgent{color:var(--scarlet);font-weight:600}
+  .row{display:flex;gap:10px}.row>*{flex:1}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{text-align:center;border:1px solid var(--line);border-radius:8px;padding:10px}
+  .stat b{display:block;font-size:24px}
+  .stat span{font-size:12px;color:#666}
+  .empty{color:#777;font-size:14px}
+  .gate{max-width:420px;margin:80px auto;text-align:center}
+</style>
+</head>
+<body>
+<header><small>AFTER-HOURS LEAD KIT · OWNER CONSOLE</small><h1 id="biz">Loading…</h1></header>
+
+<div class="gate" id="gate" hidden>
+  <h2>This link isn't valid</h2>
+  <p>Use the console link from your welcome email or your Monday brief.</p>
+</div>
+
+<main id="app" hidden>
+  <section>
+    <div class="stats">
+      <div class="stat"><b id="sLeads">0</b><span>leads (30 days)</span></div>
+      <div class="stat"><b id="sNew">0</b><span>need a call back</span></div>
+      <div class="stat"><b id="sReq">0</b><span>review asks sent</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ask a customer for a Google review</h2>
+    <p class="sub">Finished a job? Send a friendly one-time request from your business name. Takes 10 seconds.</p>
+    <label for="rName">Customer first and last name</label>
+    <input id="rName" autocomplete="off" placeholder="Jane Smith">
+    <label for="rEmail">Customer email</label>
+    <input id="rEmail" type="email" inputmode="email" autocomplete="off" placeholder="jane@example.com">
+    <button id="rSend">Send review request</button>
+    <div class="msg" id="rMsg"></div>
+  </section>
+
+  <section>
+    <h2>Draft a reply to a review</h2>
+    <p class="sub">Paste a review from Google. You get a professional reply to copy, edit and post.</p>
+    <div class="row">
+      <div><label for="dStars">Stars</label>
+        <select id="dStars"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></div>
+    </div>
+    <label for="dText">Review text</label>
+    <textarea id="dText" placeholder="Paste the review here"></textarea>
+    <button id="dGo">Draft my reply</button>
+    <div class="msg" id="dMsg"></div>
+    <div class="draft" id="dOut" hidden></div>
+    <button class="ghost" id="dCopy" hidden>Copy reply</button>
+  </section>
+
+  <section>
+    <h2>Website leads</h2>
+    <p class="sub">Update the status after you call them back. It keeps your Monday brief accurate.</p>
+    <div id="leads"></div>
+  </section>
+
+  <section>
+    <h2>Recent review requests</h2>
+    <div id="reqs"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var API = 'https://ksizqvecclwvevfzdjnb.supabase.co/functions/v1/lk-review';
+  var k = new URLSearchParams(location.search).get('k');
+  if (k) { try { localStorage.setItem('lk_owner_key', k); } catch(e) {} }
+  else { try { k = localStorage.getItem('lk_owner_key'); } catch(e) {} }
+  var $ = function(id){ return document.getElementById(id); };
+  function call(body){
+    body.k = k;
+    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j.error || 'Something went wrong'); return j; }); });
+  }
+  function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  function when(ts){ return new Date(ts).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }); }
+
+  function render(d){
+    $('biz').textContent = d.business_name;
+    document.title = d.business_name + ' · Owner Console';
+    $('sLeads').textContent = d.leads.length;
+    $('sNew').textContent = d.leads.filter(function(l){ return l.status === 'new'; }).length;
+    $('sReq').textContent = d.review_requests.filter(function(r){ return r.status === 'sent'; }).length;
+    var L = $('leads'); L.innerHTML = '';
+    if (!d.leads.length) L.appendChild(el('p','empty','No website leads yet. They will show up here and in your email.'));
+    d.leads.forEach(function(l){
+      var row = el('div','lead'); var left = el('div');
+      var name = el('b', null, l.name || 'Unknown'); if (l.urgency === 'emergency') { name.textContent = '🚨 ' + name.textContent; name.className = 'urgent'; }
+      left.appendChild(name);
+      left.appendChild(el('span', null, (l.need || '') + ' · ' + when(l.created_at)));
+      var contact = el('div');
+      if (l.phone) { var a = el('a', null, l.phone); a.href = 'tel:' + l.phone; contact.appendChild(a); }
+      else if (l.email) { var m = el('a', null, l.email); m.href = 'mailto:' + l.email; contact.appendChild(m); }
+      left.appendChild(contact);
+      var sel = el('select'); ['new','contacted','won','lost'].forEach(function(s){ var o = el('option', null, s); o.value = s; if (s === l.status) o.selected = true; sel.appendChild(o); });
+      sel.setAttribute('aria-label','Lead status for ' + (l.name || 'lead'));
+      sel.onchange = function(){ call({ action:'lead_status', lead_id: l.id, status: sel.value }).then(load).catch(function(e){ alert(e.message); }); };
+      row.appendChild(left); row.appendChild(sel); L.appendChild(row);
+    });
+    var R = $('reqs'); R.innerHTML = '';
+    if (!d.review_requests.length) R.appendChild(el('p','empty','None sent yet.'));
+    d.review_requests.forEach(function(r){
+      var row = el('div','lead'); var left = el('div');
+      left.appendChild(el('b', null, r.customer_name || r.customer_email));
+      left.appendChild(el('span', null, r.customer_email + ' · ' + when(r.created_at)));
+      row.appendChild(left); row.appendChild(el('span', r.status === 'sent' ? 'ok' : 'bad', r.status)); R.appendChild(row);
+    });
+    if (!d.has_review_link) { $('rSend').disabled = true; $('rMsg').className = 'msg bad'; $('rMsg').textContent = 'Your Google review link is not set up yet. Your installer will add it.'; }
+  }
+  function load(){ return call({ action:'info' }).then(function(d){ $('app').hidden = false; render(d); }); }
+
+  if (!k) { $('biz').textContent = 'Owner Console'; $('gate').hidden = false; return; }
+  load().catch(function(){ $('biz').textContent = 'Owner Console'; $('gate').hidden = false; });
+
+  $('rSend').onclick = function(){
+    var b = $('rSend'); b.disabled = true; $('rMsg').className = 'msg'; $('rMsg').textContent = 'Sending…';
+    call({ action:'request', customer_name: $('rName').value, customer_email: $('rEmail').value })
+      .then(function(j){ $('rMsg').className = 'msg ok'; $('rMsg').textContent = j.message; $('rName').value = ''; $('rEmail').value = ''; load(); })
+      .catch(function(e){ $('rMsg').className = 'msg bad'; $('rMsg').textContent = e.message; })
+      .then(function(){ b.disabled = false; });
+  };
+  $('dGo').onclick = function(){
+    var b = $('dGo'); b.disabled = true; $('dMsg').className = 'msg'; $('dMsg').textContent = 'Writing…'; $('dOut').hidden = true; $('dCopy').hidden = true;
+    call({ action:'draft', stars: $('dStars').value, review_text: $('dText').value })
+      .then(function(j){ $('dMsg').textContent = 'Review it, edit if needed, then post it on Google.'; $('dOut').textContent = j.draft; $('dOut').hidden = false; $('dCopy').hidden = false; })
+      .catch(function(e){ $('dMsg').className = 'msg bad'; $('dMsg').textContent = e.message; })
+      .then(function(){ b.disabled = false; });
+  };
+  $('dCopy').onclick = function(){
+    var t = $('dOut').textContent;
+    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ $('dCopy').textContent = 'Copied ✓'; setTimeout(function(){ $('dCopy').textContent = 'Copy reply'; }, 1500); }).catch(function(){ alert('Select the text and copy it manually.'); });
+  };
+})();
+</script>
+</body>
+</html>
