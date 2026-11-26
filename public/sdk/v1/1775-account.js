@@ -169,7 +169,7 @@
     var showGoogle = o.google !== false && !embedded;
     var showApple = o.apple !== false && !embedded;
     var card = el('div', { class: 'card' }, header(
-      'Sign in to play ' + (o.name || ''),
+      o.title || ('Sign in to play ' + (o.name || '')),
       'One 1775 Gaming account for every game and app.'
     ).concat([
       showGoogle ? el('button', { class: 'google', type: 'button', text: 'Continue with Google', on: { click: oauth('google') } }) : null,
@@ -207,6 +207,7 @@
       banned: 'Account banned', suspended: 'Account suspended', update_required: 'Update required',
       maintenance: 'Down for maintenance', no_access: 'You don\'t have access yet', not_released: 'Coming soon',
       unknown_game: 'Game not registered', error: 'Something went wrong',
+      not_provisioned: 'Not set up yet',
     };
     var buttons = [];
     if (code === 'update_required') {

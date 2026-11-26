@@ -6,6 +6,9 @@
 <title>Owner Console · After-Hours Lead Kit</title>
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
+<!-- 1775 Gaming account sign-in (owners). Legacy private links (?k=...) still work. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js"></script>
+<script src="https://www.1775gaming.com/sdk/v1/1775-account.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -104,9 +107,19 @@
   if (k) { try { localStorage.setItem('lk_owner_key', k); } catch(e) {} }
   else { try { k = localStorage.getItem('lk_owner_key'); } catch(e) {} }
   var $ = function(id){ return document.getElementById(id); };
+  // Owners sign in with their 1775 Gaming account (sends the login token); the legacy private
+  // link (?k=...) keeps working until LK_ALLOW_OWNER_KEY=false is set on the server.
   function call(body){
-    body.k = k;
-    return fetch(API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) })
+    var headers = {'Content-Type':'application/json'};
+    var ready = Promise.resolve();
+    if (k) body.k = k;
+    else if (window.Account1775 && Account1775.client) {
+      ready = Account1775.client.auth.getSession().then(function(r){
+        var t = r.data.session && r.data.session.access_token;
+        if (t) headers.Authorization = 'Bearer ' + t;
+      });
+    }
+    return ready.then(function(){ return fetch(API, { method:'POST', headers: headers, body: JSON.stringify(body) }); })
       .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j.error || 'Something went wrong'); return j; }); });
   }
   function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
@@ -146,8 +159,17 @@
   }
   function load(){ return call({ action:'info' }).then(function(d){ $('app').hidden = false; render(d); }); }
 
-  if (!k) { $('biz').textContent = 'Owner Console'; $('gate').hidden = false; return; }
-  load().catch(function(){ $('biz').textContent = 'Owner Console'; $('gate').hidden = false; });
+  function showKeyGate(){ $('biz').textContent = 'Owner Console'; $('gate').hidden = false; }
+  if (k) {
+    load().catch(showKeyGate);
+  } else if (window.Account1775) {
+    // 1775 Gaming sign-in, then the platform check (LeadKit is provisioned per owner).
+    Account1775.gate({ game: 'leadkit', name: 'Owner Console', title: 'Sign in to your Owner Console' })
+      .then(load)
+      .catch(function(e){ $('biz').textContent = e.message; });
+  } else {
+    showKeyGate();
+  }
 
   $('rSend').onclick = function(){
     var b = $('rSend'); b.disabled = true; $('rMsg').className = 'msg'; $('rMsg').textContent = 'Sending…';

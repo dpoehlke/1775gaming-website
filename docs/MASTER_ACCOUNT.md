@@ -23,6 +23,7 @@ reason:
 | `not_released` | `games.status = 'coming_soon'` | "Coming soon" |
 | `update_required` | App version below `games.min_version` for that platform | Update button (store or play link) |
 | `no_access` | Not free, and no purchase, membership or subscription | Link to membership options |
+| `not_provisioned` | Business app the person hasn't been set up for | "Not set up yet" + support email |
 | `ok` | All good | The game |
 
 Platform admins (`platform_admins` table) get past maintenance, unreleased and
@@ -40,12 +41,40 @@ the player's token on every request.
 | Invasion Defense | Native gate (Expo app); web gate in browser/Capacitor (email only, because Google blocks app WebViews) | Sign-in + foreground |
 | Hear & Translate | Native gate (app) + web app sign-in | Sign-in, foreground, and every server call |
 | Omniverse: Ascension | Its own login screens, now on the platform; game data stays in the Omniverse project | Sign-in, foreground, Edge Functions. **Needs the dashboard switch-over in its `docs/MASTER_ACCOUNT_MIGRATION.md`** |
-| FRACTURE | Platform sign-in, no guests | At sign-in. Backend not deployed yet; see `engine/supabase/DEPLOY.md` |
+| FRACTURE | Platform sign-in, no guests. **Free to play; multiplayer, ranked and leaderboards are paid** | At sign-in + server guards. Backend not deployed yet; see `engine/supabase/DEPLOY.md` |
+| Flight Tracker (business app) | 1775 login; access provisioned per person (admin/client) | Every page and API call |
+| After-Hours Lead Kit (business app) | Owners: 1775 login linked to their business; old private links work until retired | Console API (`lk-review`) |
 | Website admin | Google on the platform, locked to `ADMIN_UID` | n/a |
 
-**Not converted on purpose:** After-Hours Lead Kit (business owners use a private owner
-key) and Flight Tracker (its own client logins). These are business tools, not games.
-Moving their customers into gamer accounts is a business decision.
+## Paid features inside free games
+
+A free game can sell features. FRACTURE is free; `multiplayer`, `ranked` and `leaderboards`
+are rows in `game_features` (paid = true). They unlock with a purchase or grant
+(`entitlements`), an active game subscription (`game_subscriptions`), or a 1775 membership
+that covers the game. `account_check` returns them as `features: { multiplayer: true, … }`.
+
+Game servers in other Supabase projects read the same list from the player's access token
+(`a1775_features`), which needs the **Custom Access Token Hook** switched on (Authentication →
+Hooks → `custom_access_token_hook`). If it's off, paid features stay locked everywhere.
+
+Give someone FRACTURE Online by hand:
+`select platform_admin_action('grant_entitlement', '<user id>', 'fracture');`
+
+## Business / utility apps
+
+Flight Tracker and After-Hours Lead Kit use the **same 1775 login**, but `games.kind =
+'business'`: memberships, game purchases, subscriptions and "free" never cover them. Access is
+per person in `app_access`, with a role the app uses:
+
+```sql
+select platform_admin_action('grant_app', '<user id>', 'flight-tracker', p_role => 'admin');  -- or 'client'
+select platform_admin_action('grant_app', '<user id>', 'leadkit', p_role => 'owner');
+select platform_admin_action('revoke_app', '<user id>', 'leadkit');
+```
+
+Flight Tracker's "Invite client" does this automatically. LeadKit owners must also be linked to
+their business: `update lk_clients set owner_user_id = '<user id>' where public_id = '…';`.
+See each repo's README for its switch-over steps.
 
 ## Adding a new game
 
@@ -80,6 +109,7 @@ Moving their customers into gamer accounts is a business decision.
 | Warn | `select platform_admin_action('warn', '<user id>', null, 'Reason');`. Shown once, on their next sign-in |
 | Undo a ban, suspension or warning | `select platform_admin_action('revoke_action', p_id => '<account_actions id>');` |
 | Give a game for free | `select platform_admin_action('grant_entitlement', '<user id>', 'my-game');` |
+| Give business-app access | `select platform_admin_action('grant_app', '<user id>', 'flight-tracker', p_role => 'client');` |
 | Force an update | `update games set min_version = '{"ios":"1.2.0","android":"1.2.0"}' where slug = 'my-game';` |
 | Maintenance on/off | `update games set maintenance = true, maintenance_message = 'Back at 5pm CT' where slug = 'my-game';` |
 
@@ -95,7 +125,9 @@ never see `internal_note`.
    app's `scheme://auth/callback` (`heartranslate://`, `invasiondefense://`, `omniverseascension://`).
 3. **Authentication → JWT Keys:** move to asymmetric signing keys. Omniverse and FRACTURE can only
    trust platform logins after this.
-4. Make yourself a platform admin (table above).
+4. **Authentication → Hooks → Custom Access Token:** choose `custom_access_token_hook` (paid features
+   for game servers, e.g. FRACTURE Online).
+5. Make yourself a platform admin (table above).
 
 ## Known limits
 
