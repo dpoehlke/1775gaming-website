@@ -26,7 +26,17 @@
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.js';
   var SITE = 'https://www.1775gaming.com';
 
-  var state = { client: null, opts: null, root: null, session: null, check: null, resolve: null, open: false };
+  var state = { client: null, opts: null, root: null, session: null, check: null, resolve: null, open: false, providers: null };
+
+  // Which sign-in methods are switched on in the platform (so we never show a button that
+  // leads to "provider is not enabled"). If this can't be fetched, we show the defaults.
+  function loadProviders() {
+    return fetch((state.opts.url || PLATFORM_URL) + '/auth/v1/settings', { headers: { apikey: state.opts.key || PLATFORM_KEY } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { state.providers = j && j.external ? j.external : null; })
+      .catch(function () { state.providers = null; });
+  }
+  function providerOn(name) { return !state.providers || state.providers[name] === true; }
 
   // ---------- helpers ----------
   function loadSupabase() {
@@ -166,8 +176,8 @@
     var o = state.opts;
     // Google refuses sign-in inside app WebViews (Capacitor etc.), so offer email only there.
     var embedded = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
-    var showGoogle = o.google !== false && !embedded;
-    var showApple = o.apple !== false && !embedded;
+    var showGoogle = o.google !== false && !embedded && providerOn('google');
+    var showApple = o.apple !== false && !embedded && providerOn('apple');
     var card = el('div', { class: 'card' }, header(
       o.title || ('Sign in to play ' + (o.name || '')),
       'One 1775 Gaming account for every game and app.'
@@ -315,7 +325,7 @@
         state.client.auth.onAuthStateChange(function (event) {
           if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') setTimeout(run, 0);
         });
-        return run();
+        return loadProviders().then(run);
       }).catch(function (err) {
         show(blockedScreen({ code: 'error', message: err.message || String(err) }));
       });
