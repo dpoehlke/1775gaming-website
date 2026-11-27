@@ -46,6 +46,28 @@ const nextConfig = {
         ],
       },
       {
+        // 1775 Gaming account pages (password reset). Talks to the platform Supabase project.
+        // Listed after the site-wide rule so this CSP overrides it for these pages only.
+        source: '/account/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: https:",
+              "font-src 'self'",
+              "connect-src 'self' https://ksizqvecclwvevfzdjnb.supabase.co https://www.google-analytics.com https://analytics.google.com",
+              "frame-ancestors 'none'",
+            ].join('; '),
+          },
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          // Keep reset tokens out of Referer headers sent to anything the page loads.
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+        ],
+      },
+      {
         // After-Hours Lead Kit demo + owner console (static files in public/leadkit).
         // Listed after the site-wide rule so this CSP overrides it for these pages only:
         // they load the chat widget from, and call, the Lead Kit Supabase functions.

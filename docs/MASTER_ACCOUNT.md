@@ -76,6 +76,29 @@ Flight Tracker's "Invite client" does this automatically. LeadKit owners must al
 their business: `update lk_clients set owner_user_id = '<user id>' where public_id = '…';`.
 See each repo's README for its switch-over steps.
 
+## Password reset
+
+Every "Forgot password?" button (web SDK, Hear & Translate web and app, the Expo kit, Flight
+Tracker) sends the reset email to **https://www.1775gaming.com/account/reset-password**. That page
+reads the link, asks for the new password twice, saves it, signs the account out everywhere, and
+offers a "Back to …" button for the game the person came from. The return address only works for
+1775 sites listed in `app/account/reset-password/ResetPasswordClient.tsx` (`RETURN_HOSTS`). Add
+new games there.
+
+Reset emails are requested with the **implicit** flow, so the link works on any device or browser.
+A PKCE link only works in the browser that asked for it, and an app can't open it. Older emails
+that point at the homepage are forwarded to the reset page by `app/components/RecoveryForward.tsx`.
+
+Dashboard requirements:
+- **Authentication → URL Configuration → Redirect URLs** must include `https://www.1775gaming.com/**`.
+  Without it, Supabase silently sends people to the Site URL (the homepage) instead.
+- Optional, sturdier email template (**Authentication → Emails → Reset Password**): replace the
+  link with
+  `{{ .SiteURL }}/account/reset-password?token_hash={{ .TokenHash }}&type=recovery`.
+  It skips the redirect step, so email scanners that "pre-click" links are less likely to use up
+  the token. That needs Site URL = `https://www.1775gaming.com`. The "Back to game" button isn't
+  shown with this template, because the template can't carry it.
+
 ## Adding a new game
 
 1. Register it on the platform:

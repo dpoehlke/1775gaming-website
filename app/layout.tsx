@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import RecoveryForward from "./components/RecoveryForward";
 import { OrganizationSchema } from "./components/StructuredData";
 
 const bebasNeue = Bebas_Neue({
@@ -113,6 +114,7 @@ export default function RootLayout({
         className={`${bebasNeue.variable} ${ibmPlexSans.variable} bg-marine-black text-silver antialiased`}
       >
         <OrganizationSchema />
+        <RecoveryForward />
         <Navbar />
         <main className="pt-16">{children}</main>
         <Footer />

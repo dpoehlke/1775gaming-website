@@ -192,8 +192,11 @@
           click: function () {
             var em = email.value.trim();
             if (!em) { say('Type your email above first.'); return; }
-            state.client.auth.resetPasswordForEmail(em, { redirectTo: SITE }).then(function (r) {
-              say(r.error ? r.error.message : 'If that email has an account, a reset link is on its way.', !r.error);
+            // Implicit flow so the emailed link works on any device, not just this browser.
+            var resetClient = window.supabase.createClient((state.opts && state.opts.url) || PLATFORM_URL, (state.opts && state.opts.key) || PLATFORM_KEY, { auth: { flowType: 'implicit', persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+            var back = location.href.split('#')[0];
+            resetClient.auth.resetPasswordForEmail(em, { redirectTo: SITE + '/account/reset-password?return=' + encodeURIComponent(back) }).then(function (r) {
+              say(r.error ? r.error.message : 'If that email has an account, a reset link is on its way. Open it on any device, choose a new password, then sign in here.', !r.error);
             });
           },
         } }),
